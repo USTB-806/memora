@@ -95,7 +95,10 @@ html:not(.dark) h4,
 html:not(.dark) h5,
 html:not(.dark) h6,
 html:not(.dark) p:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
-html:not(.dark) span:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400) {
+html:not(.dark) span:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
+html:not(.dark) .font-medium:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
+html:not(.dark) .text-xs:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
+html:not(.dark) .mt-3:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400) {
   color: #111827 !important;
 }
 
@@ -112,7 +115,10 @@ html:not(.dark) span:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400)
 .dark h5,
 .dark h6,
 .dark p:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
-.dark span:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400) {
+.dark span:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
+.dark .font-medium:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
+.dark .text-xs:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
+.dark .mt-3:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400) {
   color: #f9fafb !important;
 }
 

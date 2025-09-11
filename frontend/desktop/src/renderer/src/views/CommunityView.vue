@@ -50,8 +50,8 @@
                     <User v-else class="w-6 h-6 text-gray-500 dark:text-gray-400" />
                   </div>
                   <div>
-                    <div class="font-medium text-gray-900 dark:text-gray-100">{{ post.username }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(post.created_at) }}</div>
+                    <div class="font-medium">{{ post.username }}</div>
+                    <div class="text-xs">{{ formatDate(post.created_at) }}</div>
                   </div>
                 </div>
                 <button
