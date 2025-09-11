@@ -1,11 +1,11 @@
 <template>
   <div class="flex-1 flex flex-col bg-white dark:bg-slate-900">
     <!-- 主内容区 -->
-    <div class="bg-white/90 dark:bg-white/95 glass-effect border border-gray-100 dark:border-gray-700 h-full min-h-0" style="padding: 16px;">
+    <div class="dark:bg-white/95 glass-effect border border-gray-100 dark:border-gray-700 h-full min-h-0" style="padding: 16px;">
 
 
       <!-- 标题区域 -->
-          <div class="flex items-center justify-between sticky top-0 z-10 bg-white/90 dark:bg-slate-800/95 glass-effect  w-full px-4 py-4">
+          <div class="flex items-center justify-between sticky top-0 z-10 bg-transparent glass-effect  w-full px-4 py-4" style="background-color: transparent;">
             <div class="flex items-center">
               <div class="bg-gradient-to-br rounded-lg flex items-center justify-center w-8 h-8 mr-3">
                 <Earth class="text-black-400 w-8 h-8" />
@@ -18,7 +18,7 @@
             <button
               @click="refreshPosts"
               :disabled="loading"
-              class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-smooth font-medium text-sm btn-hover flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 px-4 py-2 rounded-lg transition-smooth font-medium text-sm btn-hover flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
               title="刷新"
             >
               <RefreshIcon class="w-4 h-4" :class="{ 'animate-spin': loading }" />
@@ -88,7 +88,7 @@
             <!-- 收藏内容 -->
             <div class="p-4" style="padding-top: 2px;">
               <div 
-                class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                class=" hover:bg-[#374151] rounded-lg p-4 cursor-pointer"
                 @click="viewCollectionDetail(post.refer_collection_id, post.post_id)"
               >
                 <div class="flex items-center justify-between mb-2">
