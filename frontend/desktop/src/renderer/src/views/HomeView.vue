@@ -14,11 +14,11 @@
             class="flex items-center justify-between sticky top-0 z-10 bg-white dark:bg-slate-800 w-full px-4 py-4"
             style="margin-bottom: 40px"
           >
-            <div class="flex items-center">
+            <div class="text-gray-900 dark:text-gray-100 flex items-center">
               <div
-                class="bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center w-8 h-8 mr-3"
+                class="text-gray-900 dark:text-gray-100 rounded-lg flex items-center justify-center w-8 h-8 mr-3"
               >
-                <Star class="text-gray-600 dark:text-gray-300 w-8 h-8" />
+                <Star class="w-8 h-8" />
               </div>
               <div>
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ t('home.collections') }}</h1>
@@ -46,19 +46,27 @@
                 v-for="collection in collections" 
                 :key="collection.id"
                 @click="viewCollection(collection)"
-                :class="[ 
-                  'h-36 rounded-xl p-3 flex flex-col justify-between cursor-pointer transition-all duration-300 ease-out text-gray-800 relative overflow-hidden group collection-card',
-                ]"
-                style="width: 100%; max-width: 280px;"
+                class="collection-card"
+                :style="{
+                  width: '100%',
+                  maxWidth: '280px',
+                  height: '144px',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  padding: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }"
               >
-                <!-- 内容 -->
-                <div class="relative flex flex-col justify-between" style="height: 100%;">
-                  <div>
-                    <div class="text-xl mb-1">{{ collection.icon }}</div>
-                    <h3 class="text-2xl font-bold mb-0 truncate text-gray-900 dark:text-gray-100">{{ collection.name }}</h3>
-                  </div>
-                  <p class="text-gray-600 dark:text-gray-400 text-sm truncate leading-tight">{{ collection.collection_count }} {{ t('home.items') }}</p>
+                <div>
+                  <div style="font-size: 20px; margin-bottom: 4px;">{{ collection.icon }}</div>
+                  <h3 class="collection-title text-2xl font-bold mb-0 truncate">{{ collection.name }}</h3>
                 </div>
+                <p class="text-gray-600 dark:text-gray-400 text-sm truncate leading-tight">{{ collection.collection_count }} {{ t('home.items') }}</p>
               </div>
             </div>
           </div>
@@ -508,21 +516,27 @@ onMounted(async () => {
 }
 
 .collection-card {
-  background-color: #f4f4f6;
+  background-color: #f4f4f6 !important; /* 浅色模式 */
 }
 
 .collection-card:hover {
-  background: #e5e0e8;
+  background-color: #e5e0e8 !important; /* 浅色模式悬停 */
 }
 
-/* 暗色模式下的收藏卡片样式 */
+/* 深色模式卡片背景 */
 .dark .collection-card {
-  background-color: #374151;
-  border: 1px solid #4b5563;
+  background-color: #374151 !important; /* 深色模式 */
 }
 
 .dark .collection-card:hover {
-  background-color: #4b5563;
-  border-color: #6b7280;
+  background-color: #4b5563 !important; /* 深色模式悬停 */
+}
+
+.collection-title {
+  color: #111827 !important; /* 浅色模式黑色 */
+}
+
+.dark .collection-title {
+  color: #f9fafb !important; /* 深色模式白色 */
 }
 </style>

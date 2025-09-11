@@ -71,12 +71,12 @@ body:not(.dark) {
   color: #f9fafb !important;
 }
 
-/* 覆盖浅色模式下的所有可能背景 */
+/* 覆盖浅色模式下的所有可能背景 - 排除卡片内部元素 */
 html:not(.dark),
 html:not(.dark) body,
 html:not(.dark) #app,
 html:not(.dark) main,
-html:not(.dark) div:not(.collection-card):not(button):not(select):not(input):not(textarea),
+html:not(.dark) div:not(.collection-card):not(.collection-card *):not(button):not(select):not(input):not(textarea),
 html:not(.dark) .bg-slate-700,
 html:not(.dark) .bg-slate-800,
 html:not(.dark) .bg-slate-900,
@@ -87,9 +87,33 @@ html:not(.dark) [class*="bg-gray"] {
   background-color: #ffffff !important;
 }
 
-/* 深色模式下主内容区域的覆盖 */
-.dark main *:not(.collection-card):not(button):not(select):not(input):not(textarea) {
+/* 浅色模式下文字颜色 */
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6,
+html:not(.dark) p:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
+html:not(.dark) span:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400) {
+  color: #111827 !important;
+}
+
+/* 深色模式下主内容区域的覆盖 - 排除卡片内部元素 */
+.dark main *:not(.collection-card):not(.collection-card *):not(button):not(select):not(input):not(textarea) {
   background-color: rgb(30 41 59) !important;
+}
+
+/* 深色模式下文字颜色 */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark p:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400),
+.dark span:not(.text-gray-600):not(.text-gray-500):not(.text-gray-400) {
+  color: #f9fafb !important;
 }
 
 #app {
@@ -269,6 +293,59 @@ button:disabled {
 /* 工具提示样式 */
 [title] {
   position: relative;
+}
+
+/* Lucide 图标颜色样式 */
+.lucide {
+  transition: color 0.2s ease-in-out;
+}
+
+/* 浅色模式下的图标颜色 */
+.lucide {
+  color: #374151; /* 默认深灰色 */
+}
+
+.lucide:hover {
+  color: #1f2937; /* 悬停时更深 */
+}
+
+/* 深色模式下的图标颜色 */
+.dark .lucide {
+  color: #d1d5db; /* 默认浅灰色 */
+}
+
+.dark .lucide:hover {
+  color: #f9fafb; /* 悬停时更亮 */
+}
+
+/* 按钮中的图标颜色继承 */
+button .lucide {
+  color: inherit;
+}
+
+/* 特定状态下的图标颜色 */
+.text-red-400 .lucide,
+.text-red-500 .lucide {
+  color: inherit;
+}
+
+.text-blue-600 .lucide,
+.text-blue-700 .lucide {
+  color: inherit;
+}
+
+.text-gray-400 .lucide,
+.text-gray-500 .lucide {
+  color: inherit;
+}
+
+/* 激活状态的图标 */
+.lucide.active {
+  color: #3b82f6; /* 蓝色 */
+}
+
+.dark .lucide.active {
+  color: #60a5fa; /* 深色模式下的蓝色 */
 }
 
 /* 自定义样式类 */

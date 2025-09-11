@@ -8,7 +8,7 @@
           <div class="flex items-center justify-between sticky top-0 z-10 bg-transparent glass-effect  w-full px-4 py-4" style="background-color: transparent;">
             <div class="flex items-center">
               <div class="bg-gradient-to-br rounded-lg flex items-center justify-center w-8 h-8 mr-3">
-                <Earth class="text-black-400 w-8 h-8" />
+                <Earth class="text-gray-600 dark:text-gray-300 w-8 h-8" />
               </div>
               <div>
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ t('community.title') }}</h1>
@@ -57,7 +57,7 @@
                 <button
                   v-if="isMyPost(post)"
                   @click="deletePostById(post.post_id)"
-                  class="text-gray-400 hover:text-red-500 transition-colors"
+                  class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                 >
                   <TrashIcon class="w-4 h-4" />
                 </button>
@@ -78,7 +78,7 @@
                 <button
                   v-if="post.description.length > 150"
                   @click="post.showFullDescription = !post.showFullDescription"
-                  class="text-blue-600 hover:text-blue-700 text-sm mt-1"
+                  class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm mt-1"
                 >
                   {{ post.showFullDescription ? t('community.collapse') : t('community.expand') }}
                 </button>
@@ -94,7 +94,7 @@
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center gap-2 flex-wrap">
                     <BookmarkIcon class="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    <span v-if="post.category_name" class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">
+                    <span v-if="post.category_name" class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded">
                       {{ post.category_name }}
                     </span>
                     <!-- 标签 -->
@@ -128,7 +128,7 @@
                 <button
                   @click="toggleLike(post)"
                   class="flex items-center gap-1 text-sm transition-colors"
-                  :class="post.is_liked_by_me ? 'text-red-500' : 'text-gray-500 hover:text-red-500'"
+                  :class="post.is_liked_by_me ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400'"
                 >
                   <HeartIcon 
                     class="w-4 h-4" 
@@ -140,7 +140,7 @@
                 <!-- 评论 -->
                 <button
                   @click="toggleComments(post)"
-                  class="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-500 transition-colors"
+                  class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                 >
                   <MessageCircleIcon class="w-4 h-4" />
                   {{ post.comments_count }}
@@ -169,7 +169,7 @@
                     <button
                       @click="submitComment(post)"
                       :disabled="!post.newComment?.trim() || post.commentLoading"
-                      class="ml-2 text-grey-600 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-base px-2 py-1 rounded"
+                      class="ml-2 text-gray-600 dark:text-gray-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed text-base px-2 py-1 rounded"
                       style="min-width: 48px;"
                     >
                       <template v-if="post.commentLoading">...</template>
@@ -199,7 +199,7 @@
                           <button
                             v-if="isMyComment(comment)"
                             @click="deleteCommentById(comment.id)"
-                            class="text-gray-400 hover:text-red-500 transition-colors"
+                            class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                           >
                             <TrashIcon class="w-3 h-3" />
                           </button>
@@ -213,7 +213,7 @@
                       <button
                         @click="toggleCommentLike(comment)"
                         class="flex items-center gap-1 text-xs transition-colors"
-                        :class="comment.is_liked_by_me ? 'text-red-500' : 'text-gray-400 hover:text-red-500'"
+                        :class="comment.is_liked_by_me ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400'"
                       >
                         <HeartIcon 
                           class="w-3 h-3" 
@@ -231,7 +231,7 @@
                 <button
                   @click="loadMoreComments(post)"
                   :disabled="post.loadingComments"
-                  class="w-full py-2 text-sm text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                  class="w-full py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50"
                 >
                   {{ post.loadingComments ? t('community.loadingComments') : t('community.loadMoreComments') }}
                 </button>
@@ -243,10 +243,10 @@
         <!-- 空状态 -->
         <div v-else class="text-center py-16">
           <div class="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Earth class="w-12 h-12 text-blue-600" />
+            <Earth class="w-12 h-12 text-blue-600 dark:text-blue-400" />
           </div>
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ t('community.noContent') }}</h2>
-          <p class="text-gray-600 mb-6">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ t('community.noContent') }}</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
             {{ t('community.beFirst') }}
           </p>
           <button
