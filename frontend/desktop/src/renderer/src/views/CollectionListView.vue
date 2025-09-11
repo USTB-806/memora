@@ -1,12 +1,12 @@
 <template>
   <div class="h-screen bg-white dark:bg-gray-900 flex flex-col">
     <!-- Header -->
-    <header class="border-b border-gray-200 flex-shrink-0">
+    <header class="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
       <div class="max-w-6xl mx-auto px-6 py-5">
         <div class="flex justify-between items-start mb-2">
           <button
             @click="$router.back()"
-            class="px-2 py-1 bgconst createKnowledgeBase = async () => { if (!categoryId || creatingKnowledgeBase.value) return try { creatingKnowledgeBase.value = true const result = await apiCreateKnowledgeBase(categoryId) if (result.code === ) { // 知识库创建已启动，后台处理 alert('知识库创建已启动，请稍后刷新页面查看状态。') // 由于是后台任务，不立即重新获取数据 } } catch (error) { console.error('创建知识库失败:', error) alert('创建知识库失败: ' + (error.detail || error.message || '未知错误')) } finally { creatingKnowledgeBase.value = false } }-gray-200 rounded text-gray-700 font-medium flex items-center gap-2"
+            class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2 hover:bg-gray-300 dark:hover:bg-gray-600"
             style="font-size: 12px"
           >
             <svg
@@ -24,7 +24,7 @@
 
         <div class="flex items-center gap-3 mb-2" style="justify-content: space-between">
           <div>
-            <BookmarkIcon class="w-6 h-6 text-black" />
+            <BookmarkIcon class="w-6 h-6 text-black dark:text-gray-100" />
             <h1 class="text-2xl font-bold text-black dark:text-gray-100">
               {{ category?.emoji }} {{ category?.name }}
             </h1>
@@ -35,7 +35,7 @@
               v-if="!category?.knowledge_base_id"
               @click="createKnowledgeBase"
               :disabled="creatingKnowledgeBase"
-              class="px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-300 rounded text-gray-700 font-medium flex items-center gap-2"
+              class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 rounded text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2"
             >
               <svg
                 v-if="creatingKnowledgeBase"
@@ -76,7 +76,7 @@
             <button
               v-else
               @click="showAskAIPanel = true"
-              class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-gray-700 font-medium flex items-center gap-2"
+              class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2"
             >
               <svg
                 class="w-4 h-4"
@@ -100,7 +100,7 @@
                 @keydown.enter="handleSearch"
                 type="text"
                 :placeholder="t('collection.searchCollections')"
-                class="pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm w-64"
+                class="pl-4 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
               <button
                 v-if="searchQuery"
@@ -108,7 +108,7 @@
                 class="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
                 <svg
-                  class="h-4 w-4 text-gray-400 hover:text-gray-600"
+                  class="h-4 w-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -124,7 +124,7 @@
             </div>
           </div>
         </div>
-        <p class="text-gray-500 text-sm">
+        <p class="text-gray-500 dark:text-gray-400 text-sm">
           {{ t('collection.totalCollections', { count: filteredCollections.length }) }}
           <span v-if="searchQuery">({{ t('collection.filtered', { count: collections.length - filteredCollections.length }) }})</span>
         </p>
@@ -133,14 +133,14 @@
 
     <!-- Main Content -->
     <main class="max-w-6xl px-6 py-6 flex-1 min-h-0">
-      <div v-if="loading" class="text-center py-16 text-gray-500">{{ t('collection.loading') }}</div>
+      <div v-if="loading" class="text-center py-16 text-gray-500 dark:text-gray-400">{{ t('collection.loading') }}</div>
       <div v-else class="h-full">
         <div v-if="filteredCollections.length === 0" class="text-center py-16">
-          <BookmarkIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 class="text-lg font-medium text-gray-900 mb-2">
+          <BookmarkIcon class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
             {{ searchQuery ? t('collection.noMatchingCollections') : t('collection.noCollections') }}
           </h3>
-          <p class="text-gray-500">
+          <p class="text-gray-500 dark:text-gray-400">
             {{ searchQuery ? t('collection.tryDifferentSearch') : t('collection.noCollectionsInCategory') }}
           </p>
         </div>

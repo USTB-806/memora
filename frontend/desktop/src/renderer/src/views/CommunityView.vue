@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 flex flex-col bg-white dark:bg-slate-900">
     <!-- 主内容区 -->
-    <div class="bg-white/90 dark:bg-slate-800/95 glass-effect border border-gray-100 dark:border-gray-700 h-full min-h-0" style="padding: 16px;">
+    <div class="bg-white/90 dark:bg-white/95 glass-effect border border-gray-100 dark:border-gray-700 h-full min-h-0" style="padding: 16px;">
 
 
       <!-- 标题区域 -->

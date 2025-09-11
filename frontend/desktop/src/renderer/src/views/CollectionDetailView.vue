@@ -1,11 +1,11 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-gray-900">
     <!-- Header -->
-    <header class="border-b border-gray-200">
+    <header class="border-b border-gray-200 dark:border-gray-700">
       <div class="max-w-4xl mx-auto px-6 py-8">
         <button
           @click="$router.back()"
-          class="mb-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-gray-700 font-medium flex items-center gap-2"
+          class="mb-4 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2"
         >
           <svg
             class="w-4 h-4"
@@ -19,7 +19,7 @@
           返回
         </button>
         <div class="flex items-center gap-3 mb-2">
-          <BookmarkIcon class="w-6 h-6 text-black" />
+          <BookmarkIcon class="w-6 h-6 text-black dark:text-gray-100" />
           <h1 class="text-2xl font-bold text-black dark:text-gray-100">网页收藏详情</h1>
         </div>
         <p class="text-gray-600 dark:text-gray-400">查看收藏的详细内容</p>
@@ -28,24 +28,24 @@
 
     <!-- Main Content -->
     <main class="max-w-4xl mx-auto px-6 py-12">
-      <div class="border border-gray-200 shadow-sm rounded-lg bg-white">
+      <div class="border border-gray-200 dark:border-gray-700 shadow-sm rounded-lg bg-white dark:bg-gray-800">
         <div class="p-6 pb-6">
           <div class="flex items-start justify-between gap-4">
             <div class="flex-1">
-              <h2 class="text-2xl font-bold text-black mb-3 leading-tight">{{ details.title }}</h2>
-              <p class="text-base text-gray-600 leading-relaxed">{{ details.summary }}</p>
+              <h2 class="text-2xl font-bold text-black dark:text-gray-100 mb-3 leading-tight">{{ details.title }}</h2>
+              <p class="text-base text-gray-600 dark:text-gray-400 leading-relaxed">{{ details.summary }}</p>
             </div>
             <div class="flex gap-2">
               <button
                 @click="showPublishModal = true"
-                class="shrink-0 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+                class="shrink-0 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm"
               >
                 <ShareIcon class="w-4 h-4" />
                 分享到社区
               </button>
               <button
                 @click="openOriginalLink"
-                class="shrink-0 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 bg-transparent transition-colors flex items-center gap-2 text-sm"
+                class="shrink-0 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 bg-transparent dark:bg-transparent transition-colors flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
               >
                 <ExternalLinkIcon class="w-4 h-4" />
                 访问原文

@@ -1,34 +1,34 @@
 <template>
   <!-- 只保留主内容区 -->
-  <div class="flex-1 flex flex-col overflow-hidden min-w-0">
-    <main class="flex-1 overflow-auto custom-scrollbar">
+  <div class="flex-1 flex flex-col overflow-hidden min-w-0 bg-white dark:bg-slate-800">
+    <main class="flex-1 overflow-auto custom-scrollbar bg-white dark:bg-slate-800">
       <!-- 收藏管理页面 -->
-      <div v-if="currentPage === 'collections'" class="h-full">
+      <div v-if="currentPage === 'collections'" class="h-full bg-white dark:bg-slate-800">
         <!-- 主要内容区域 -->
         <div
-          class="bg-white/90 glass-effect border border-gray-100 h-full min-h-0"
+          class="bg-white dark:bg-slate-800 border border-gray-100 dark:border-gray-700 h-full min-h-0"
           style="padding: 16px"
         >
           <!-- 标题区域 -->
           <div
-            class="flex items-center justify-between sticky top-0 z-10 bg-white/90 glass-effect w-full px-4 py-4"
+            class="flex items-center justify-between sticky top-0 z-10 bg-white dark:bg-slate-800 w-full px-4 py-4"
             style="margin-bottom: 40px"
           >
             <div class="flex items-center">
               <div
-                class="bg-gradient-to-br rounded-lg flex items-center justify-center w-8 h-8 mr-3"
+                class="bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center w-8 h-8 mr-3"
               >
-                <Star class="text-black-400 w-8 h-8" />
+                <Star class="text-gray-600 dark:text-gray-300 w-8 h-8" />
               </div>
               <div>
-                <h1 class="text-2xl font-bold text-gray-900">{{ t('home.collections') }}</h1>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ t('home.collections') }}</h1>
               </div>
             </div>
             <!-- 刷新按钮 -->
             <button
               @click="refreshCollections"
               :disabled="isLoadingCollections"
-              class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-smooth font-medium text-sm btn-hover flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg transition-smooth font-medium text-sm btn-hover flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
               title="刷新收藏列表"
             >
               <RefreshIcon :class="[
@@ -55,9 +55,9 @@
                 <div class="relative flex flex-col justify-between" style="height: 100%;">
                   <div>
                     <div class="text-xl mb-1">{{ collection.icon }}</div>
-                    <h3 class="text-2xl font-bold mb-0 truncate text-gray-1000">{{ collection.name }}</h3>
+                    <h3 class="text-2xl font-bold mb-0 truncate text-gray-900 dark:text-gray-100">{{ collection.name }}</h3>
                   </div>
-                  <p class="text-gray-600 text-sm truncate leading-tight">{{ collection.collection_count }} {{ t('home.items') }}</p>
+                  <p class="text-gray-600 dark:text-gray-400 text-sm truncate leading-tight">{{ collection.collection_count }} {{ t('home.items') }}</p>
                 </div>
               </div>
             </div>
@@ -76,12 +76,12 @@
             "
           >
             <div class="text-6xl mb-4">📚</div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('home.noCollections') }}</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{{ t('home.noCollections') }}</h3>
           </div>
           <!-- 加载状态 -->
           <div v-if="isLoadingCollections && collections.length === 0" class="text-center" style="height: calc(100% - 84px); display: flex; justify-content: center; align-items: center; flex-direction: column;">
-            <div class="w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin mb-4"></div>
-            <p class="text-gray-500">{{ t('home.loadingCollections') }}</p>
+            <div class="w-8 h-8 border-2 border-gray-300 dark:border-gray-600 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin mb-4"></div>
+            <p class="text-gray-500 dark:text-gray-400">{{ t('home.loadingCollections') }}</p>
           </div>
         </div>
       </div>
@@ -90,12 +90,12 @@
           <!-- 创建事件按钮 -->
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-lg font-semibold text-gray-900">{{ t('home.myEvents') }}</h3>
-              <p class="text-sm text-gray-500">{{ t('home.manageEvents') }}</p>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ t('home.myEvents') }}</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('home.manageEvents') }}</p>
             </div>
             <button
               @click="showCreateEvent = true"
-              class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-smooth font-medium text-sm btn-hover flex items-center space-x-2"
+              class="bg-gray-900 dark:bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-smooth font-medium text-sm btn-hover flex items-center space-x-2"
             >
               <Plus class="w-4 h-4" />
               <span>{{ t('home.createEvent') }}</span>
@@ -103,14 +103,14 @@
           </div>
 
           <!-- 事件列表 -->
-          <div class="bg-white/80 glass-effect rounded-xl border border-gray-100">
+          <div class="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-gray-700">
               <div class="p-4">
                 <div class="space-y-3">
-                  <div v-for="event in events" :key="event.id" class="p-4 border border-gray-100 rounded-lg hover:bg-gray-50/80 transition-smooth">
+                  <div v-for="event in events" :key="event.id" class="p-4 border border-gray-100 dark:border-gray-700 rounded-lg hover:bg-gray-50/80 dark:hover:bg-gray-700/50 transition-smooth">
                     <div class="flex items-start justify-between">
                       <div class="flex-1 min-w-0">
-                        <p class="font-medium text-gray-900 truncate">{{ event.description }}</p>
-                        <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                        <p class="font-medium text-gray-900 dark:text-gray-100 truncate">{{ event.description }}</p>
+                        <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
                           <span>{{ formatDate(event.created_at) }}</span>
                           <span v-if="event.metadata" class="truncate">{{ Object.keys(event.metadata).length }} {{ t('home.tags') }}</span>
                         </div>
@@ -118,21 +118,21 @@
                       <div class="flex items-center space-x-1 ml-4">
                         <button 
                           @click="viewEvent(event)"
-                          class="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100 transition-smooth"
+                          class="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-smooth"
                           title="查看"
                         >
                           <Eye class="w-4 h-4" />
                         </button>
                         <button 
                           @click="editEvent(event)"
-                          class="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100 transition-smooth"
+                          class="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-smooth"
                           title="编辑"
                         >
                           <Edit class="w-4 h-4" />
                         </button>
                         <button 
                           @click="deleteEvent(event.id)"
-                          class="p-1.5 text-red-400 hover:text-red-600 rounded hover:bg-red-50 transition-smooth"
+                          class="p-1.5 text-red-400 dark:text-red-500 hover:text-red-600 dark:hover:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-smooth"
                           title="删除"
                         >
                           <Trash2 class="w-4 h-4" />
@@ -142,21 +142,21 @@
                     <div class="flex items-center space-x-1 ml-4">
                       <button
                         @click="viewEvent(event)"
-                        class="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100 transition-smooth"
+                        class="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-smooth"
                         title="查看"
                       >
                         <Eye class="w-4 h-4" />
                       </button>
                       <button
                         @click="editEvent(event)"
-                        class="p-1.5 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100 transition-smooth"
+                        class="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-smooth"
                         title="编辑"
                       >
                         <Edit class="w-4 h-4" />
                       </button>
                       <button
                         @click="deleteEvent(event.id)"
-                        class="p-1.5 text-red-400 hover:text-red-600 rounded hover:bg-red-50 transition-smooth"
+                        class="p-1.5 text-red-400 dark:text-red-500 hover:text-red-600 dark:hover:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-smooth"
                         title="删除"
                       >
                         <Trash2 class="w-4 h-4" />
@@ -165,9 +165,9 @@
                   </div>
                   
                   <div v-if="events.length === 0" class="text-center py-12">
-                    <Calendar class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p class="text-gray-500">{{ t('home.noEvents') }}</p>
-                    <p class="text-sm text-gray-400 mt-1">{{ t('home.createFirstEvent') }}</p>
+                    <Calendar class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                    <p class="text-gray-500 dark:text-gray-400">{{ t('home.noEvents') }}</p>
+                    <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">{{ t('home.createFirstEvent') }}</p>
                   </div>
                 </div>
               </div>
@@ -179,14 +179,14 @@
       <!-- 附件管理页面 -->
       <div v-if="currentPage === 'attachments'" class="space-y-6 max-w-4xl">
         <!-- 上传区域 -->
-        <div class="bg-white/80 glass-effect rounded-xl border border-gray-100 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ t('home.uploadAttachments') }}</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-gray-700 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ t('home.uploadAttachments') }}</h3>
           
           <div class="space-y-4">
             <!-- 事件选择 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('home.associatedEvent') }}</label>
-              <select v-model="selectedEventId" class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white/80 transition-smooth text-sm">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ t('home.associatedEvent') }}</label>
+              <select v-model="selectedEventId" class="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-gray-100 transition-smooth text-sm">
                 <option value="">{{ t('home.selectEvent') }}</option>
                 <option v-for="event in events" :key="event.id" :value="event.id">
                   {{ event.description }}
@@ -202,16 +202,16 @@
               :class="[
                 'border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200',
                 isDragging
-                  ? 'border-gray-400 bg-gray-50/50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-gray-400 dark:border-gray-500 bg-gray-50/50 dark:bg-gray-700/30'
+                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
               ]"
             >
-              <Upload class="w-10 h-10 text-gray-400 mx-auto mb-3" />
-              <h4 class="text-base font-semibold text-gray-900 mb-2">{{ t('home.dragFilesHere') }}</h4>
-              <p class="text-gray-500 mb-4 font-light text-sm">{{ t('home.uploadDescription') }}</p>
+              <Upload class="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+              <h4 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">{{ t('home.dragFilesHere') }}</h4>
+              <p class="text-gray-500 dark:text-gray-400 mb-4 font-light text-sm">{{ t('home.uploadDescription') }}</p>
               <button 
                 @click="triggerFileInput"
-                class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-smooth font-medium text-sm btn-hover"
+                class="bg-gray-900 dark:bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-smooth font-medium text-sm btn-hover"
               >
                 {{ t('home.selectFile') }}
               </button>
@@ -226,10 +226,10 @@
 
             <!-- 描述 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('home.description') }}</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ t('home.description') }}</label>
               <textarea 
                 v-model="attachmentDescription" 
-                class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white/80 transition-smooth text-sm resize-none"
+                class="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-gray-100 transition-smooth text-sm resize-none"
                 rows="2"
                 :placeholder="t('home.addDescription')"
               ></textarea>
@@ -238,7 +238,7 @@
             <button
               @click="uploadAttachment"
               :disabled="!selectedEventId || !selectedFile"
-              class="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-smooth font-medium text-sm btn-hover"
+              class="w-full bg-blue-600 dark:bg-blue-700 text-white py-2.5 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-smooth font-medium text-sm btn-hover"
             >
               {{ t('home.uploadAttachment') }}
             </button>
@@ -246,15 +246,15 @@
         </div>
 
         <!-- 附件列表 -->
-        <div class="bg-white/80 glass-effect rounded-xl border border-gray-100">
-          <div class="p-4 border-b border-gray-50">
-            <h3 class="text-lg font-semibold text-gray-900">{{ t('home.recentUploads') }}</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-gray-700">
+          <div class="p-4 border-b border-gray-50 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ t('home.recentUploads') }}</h3>
           </div>
           <div class="p-4">
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               <div v-for="attachment in attachments" :key="attachment.id" class="relative group">
                 <div
-                  class="aspect-square bg-gray-100 rounded-lg border border-gray-200 overflow-hidden"
+                  class="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden"
                 >
                   <img
                     v-if="isImage(attachment.url)"
@@ -263,14 +263,14 @@
                     class="w-full h-full object-cover"
                   />
                   <div v-else class="w-full h-full flex items-center justify-center">
-                    <FileText class="w-6 h-6 text-gray-400" />
+                    <FileText class="w-6 h-6 text-gray-400 dark:text-gray-500" />
                   </div>
                 </div>
                 <div class="mt-2">
-                  <p class="text-xs text-gray-700 truncate font-medium">
+                  <p class="text-xs text-gray-700 dark:text-gray-300 truncate font-medium">
                     {{ getFileName(attachment.url) }}
                   </p>
-                  <p class="text-xs text-gray-400 mt-0.5">
+                  <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                     {{ formatDate(attachment.created_at) }}
                   </p>
                 </div>
@@ -278,14 +278,14 @@
                   class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all flex items-center justify-center"
                 >
                   <div class="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
-                    <button class="p-1.5 bg-white rounded shadow-lg hover:bg-gray-50">
-                      <Eye class="w-3 h-3 text-gray-600" />
+                    <button class="p-1.5 bg-white dark:bg-gray-800 rounded shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <Eye class="w-3 h-3 text-gray-600 dark:text-gray-300" />
                     </button>
                     <button
                       @click="deleteAttachment(attachment.id)"
-                      class="p-1.5 bg-white rounded shadow-lg hover:bg-red-50"
+                      class="p-1.5 bg-white dark:bg-gray-800 rounded shadow-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                     >
-                      <Trash2 class="w-3 h-3 text-red-600" />
+                      <Trash2 class="w-3 h-3 text-red-600 dark:text-red-400" />
                     </button>
                   </div>
                 </div>
@@ -513,5 +513,16 @@ onMounted(async () => {
 
 .collection-card:hover {
   background: #e5e0e8;
+}
+
+/* 暗色模式下的收藏卡片样式 */
+.dark .collection-card {
+  background-color: #374151;
+  border: 1px solid #4b5563;
+}
+
+.dark .collection-card:hover {
+  background-color: #4b5563;
+  border-color: #6b7280;
 }
 </style>

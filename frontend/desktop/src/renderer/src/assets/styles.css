@@ -45,27 +45,55 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  background-color: transparent;
   font-size: 14px;
   line-height: 1.5;
-  /* overflow: hidden; */
 }
 
-/* 深色主题下的 body 背景 */
+/* 浅色模式：白色背景，黑色文本 */
+body:not(.dark) {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+#app:not(.dark) {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+/* 深色模式：深色背景，白色文本 */
 .dark body {
   background-color: #0f1419 !important;
   color: #f9fafb !important;
 }
 
-/* 深色主题下的根元素 */
-.dark {
+.dark #app {
   background-color: #0f1419 !important;
   color: #f9fafb !important;
 }
 
+/* 覆盖浅色模式下的所有可能背景 */
+html:not(.dark),
+html:not(.dark) body,
+html:not(.dark) #app,
+html:not(.dark) main,
+html:not(.dark) div:not(.collection-card):not(button):not(select):not(input):not(textarea),
+html:not(.dark) .bg-slate-700,
+html:not(.dark) .bg-slate-800,
+html:not(.dark) .bg-slate-900,
+html:not(.dark) .bg-gray-800,
+html:not(.dark) .bg-gray-900,
+html:not(.dark) [class*="bg-slate"],
+html:not(.dark) [class*="bg-gray"] {
+  background-color: #ffffff !important;
+}
+
+/* 深色模式下主内容区域的覆盖 */
+.dark main *:not(.collection-card):not(button):not(select):not(input):not(textarea) {
+  background-color: rgb(30 41 59) !important;
+}
+
 #app {
   height: 100vh;
-  /* overflow: hidden; */
 }
 
 /* 自定义滚动条样式 */

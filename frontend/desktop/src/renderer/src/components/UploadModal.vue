@@ -4,15 +4,15 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     @click.self="closeModal"
   >
-    <div class="bg-white rounded-xl p-6 w-96 max-w-90vw shadow-2xl">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-96 max-w-90vw shadow-2xl">
       <!-- 标题栏 -->
       <div class="flex items-center justify-between mb-4">
         <div>
-          <h2 class="text-xl font-bold text-gray-900">上传图片</h2>
-          <p class="text-sm text-gray-500 mt-1">支持连续上传多张图片到不同分类</p>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">上传图片</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">支持连续上传多张图片到不同分类</p>
         </div>
-        <button class="p-1 hover:bg-gray-100 rounded-lg transition-colors" @click="closeModal">
-          <X class="w-5 h-5 text-gray-500" />
+        <button class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" @click="closeModal">
+          <X class="w-5 h-5 text-gray-500 dark:text-gray-400" />
         </button>
       </div>
 
@@ -20,28 +20,28 @@
       <div class="space-y-4 mt-6">
         <!-- 分类输入 -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2"> 分类 * </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 分类 * </label>
           <input
             v-model="category"
             type="text"
             placeholder="请输入分类名称，如：food, travel, art..."
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-            :class="{ 'border-red-300': errors.category }"
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            :class="{ 'border-red-300 dark:border-red-500': errors.category }"
           />
-          <p v-if="errors.category" class="text-red-500 text-sm mt-1">
+          <p v-if="errors.category" class="text-red-500 dark:text-red-400 text-sm mt-1">
             {{ errors.category }}
           </p>
         </div>
 
         <!-- 图片选择 -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2"> 选择图片 * </label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"> 选择图片 * </label>
           <div
             :class="[
               'border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all',
-              isDragging ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400',
-              errors.file ? 'border-red-300' : '',
-              selectedFile ? 'border-green-400 bg-green-50' : ''
+              isDragging ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500',
+              errors.file ? 'border-red-300 dark:border-red-500' : '',
+              selectedFile ? 'border-green-400 bg-green-50 dark:bg-green-900/20' : ''
             ]"
             @click="triggerFileInput"
             @drop="handleDrop"

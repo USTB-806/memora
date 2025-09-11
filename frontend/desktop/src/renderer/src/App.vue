@@ -157,10 +157,11 @@ const isActiveMenu = (item) => {
   background-color: rgba(255, 255, 255, 0.9);
 }
 .dark .sidebar-bg {
-  background-color: #3b3b3b !important;
+  background-color: rgba(51, 65, 85, 0.95) !important;
 }
 .sidebar-acive-btn {
   background-color: #e9eaea;
+  color: #1f2937;
 }
 .btn-hover {
   transition: background-color 0s ease-in-out;
@@ -172,6 +173,7 @@ const isActiveMenu = (item) => {
 }
 .dark .sidebar-acive-btn {
   background-color: #374151;
+  color: #f9fafb;
 }
 .dark .btn-hover:hover {
   background-color: #374151;

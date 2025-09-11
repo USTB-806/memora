@@ -5,13 +5,13 @@
     style="z-index: 9999;"
     @click.self="closeModal"
   >
-    <div class="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full mx-4">
       <!-- 模态框头部 -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900">{{ t('community.publishToCommunity') }}</h3>
+      <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ t('community.publishToCommunity') }}</h3>
         <button 
           @click="closeModal"
-          class="text-gray-400 hover:text-gray-600 transition-colors"
+          class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
         >
           <XIcon class="w-5 h-5" />
         </button>
@@ -20,32 +20,32 @@
       <!-- 模态框内容 -->
       <div class="p-6">
         <!-- 成功提示 -->
-        <div v-if="successMessage" class="mb-4 text-green-600 text-center font-semibold">
+        <div v-if="successMessage" class="mb-4 text-green-600 dark:text-green-400 text-center font-semibold">
           {{ successMessage }}
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {{ t('community.shareDescription') }}
           </label>
           <textarea
             v-model="description"
             :placeholder="t('community.sharePlaceholder')"
-            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             rows="4"
             maxlength="500"
           ></textarea>
-          <div class="text-xs text-gray-500 mt-1 text-right">
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
             {{ description.length }}/500
           </div>
         </div>
       </div>
 
       <!-- 模态框底部 -->
-      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
         <button
           @click="closeModal"
-          class="px-4 py-2 bg-white text-black border border-black rounded-lg hover:bg-gray-100 transition-colors font-medium"
+          class="px-4 py-2 bg-white dark:bg-gray-700 text-black dark:text-gray-100 border border-black dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium"
           :disabled="loading"
         >
           {{ t('community.cancel') }}
@@ -53,7 +53,7 @@
         <button
           @click="handlePublish"
           :disabled="loading"
-          class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          class="px-4 py-2 bg-black dark:bg-gray-800 text-white rounded-lg hover:bg-gray-900 dark:hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           <span v-if="loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
           {{ loading ? t('community.publishing') : t('community.publish') }}

@@ -5,7 +5,7 @@
       <div class="max-w-6xl mx-auto px-6 py-8">
         <button
           @click="$router.back()"
-          class="mb-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-gray-700 font-medium flex items-center gap-2 transition-colors"
+          class="mb-4 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2 transition-colors"
         >
           <svg
             class="w-4 h-4"
@@ -19,7 +19,7 @@
           返回
         </button>
         <div class="flex items-center gap-3 mb-2">
-          <ImageIcon class="w-6 h-6 text-black" />
+          <ImageIcon class="w-6 h-6 text-black dark:text-gray-100" />
           <h1 class="text-2xl font-bold text-black dark:text-gray-100">附件收藏</h1>
         </div>
         <p class="text-gray-500 dark:text-gray-400">分类 #{{ categoryId }} 下的所有附件</p>
@@ -28,22 +28,22 @@
 
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-6 py-12">
-      <div v-if="loading" class="text-center py-16 text-gray-500">加载中...</div>
+      <div v-if="loading" class="text-center py-16 text-gray-500 dark:text-gray-400">加载中...</div>
       <div v-else>
         <div v-if="collections.length === 0" class="text-center py-16">
-          <ImageIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 class="text-lg font-medium text-gray-800 mb-2">没有找到相关附件收藏</h3>
-          <p class="text-gray-500">该分类下暂无包含附件的收藏</p>
+          <ImageIcon class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">没有找到相关附件收藏</h3>
+          <p class="text-gray-500 dark:text-gray-400">该分类下暂无包含附件的收藏</p>
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
             v-for="item in collections"
             :key="item.id"
-            class="border border-gray-200 rounded-lg bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col"
+            class="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col"
             @click="viewAttachmentDetail(item)"
           >
             <!-- Image Thumbnail -->
-            <div class="aspect-video bg-gray-100 rounded-t-lg overflow-hidden">
+            <div class="aspect-video bg-gray-100 dark:bg-gray-700 rounded-t-lg overflow-hidden">
               <img
                 v-if="item.imageUrl && isImage(item.imageUrl)"
                 :src="getFullUrl(item.imageUrl)"
