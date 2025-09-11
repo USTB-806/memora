@@ -88,7 +88,7 @@
             <!-- 收藏内容 -->
             <div class="p-4" style="padding-top: 2px;">
               <div 
-                class="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors"
+                class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                 @click="viewCollectionDetail(post.refer_collection_id, post.post_id)"
               >
                 <div class="flex items-center justify-between mb-2">
@@ -157,7 +157,7 @@
                     <img v-if="currentUser && currentUser.avatar_attachment_id" :src="buildAvatarUrl(currentUser.avatar_attachment_id)" :alt="t('community.myAvatar')" class="w-full h-full object-cover">
                     <span v-else class="text-white font-semibold text-xs">我</span>
                   </div>
-                  <div class="flex-1 flex items-center bg-gray-100 rounded-lg px-2">
+                  <div class="flex-1 flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg px-2">
                     <input
                       v-model="post.newComment"
                       type="text"

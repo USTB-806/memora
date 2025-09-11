@@ -53,7 +53,7 @@
                     </div>
                     <div style="display: flex; justify-content: center; align-items: center;">
                         <button @click="showEdit"
-                            class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-slate-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-800 ">
                             <Edit3 class="h-4 w-4 mr-1" />
                             {{ t('profile.edit') }}
                         </button>
@@ -77,7 +77,7 @@
                     <div
                         v-for="post in recentPosts.slice(0, 2)"
                         :key="post.id"
-                        class="p-4 rounded shadow transition cursor-pointer backdrop-blur-sm bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700"
+                        class="p-4 rounded shadow transition cursor-pointer  hover:bg-[#374151]"
                         style="margin-bottom: 20px; border-radius: 15px;"
                         @click="goToPost(post.id)"
                     >
