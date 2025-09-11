@@ -1,4 +1,29 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+
+/* 强制深色主题样式 */
+.dark {
+  color-scheme: dark;
+}
+
+/* 确保深色主题类被包含 */
+@layer utilities {
+  .dark\:bg-slate-800 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(30 41 59 / var(--tw-bg-opacity));
+  }
+  .dark\:bg-slate-900 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(15 23 42 / var(--tw-bg-opacity));
+  }
+  .dark\:text-gray-100 {
+    --tw-text-opacity: 1;
+    color: rgb(243 244 246 / var(--tw-text-opacity));
+  }
+  .dark\:text-gray-300 {
+    --tw-text-opacity: 1;
+    color: rgb(209 213 219 / var(--tw-text-opacity));
+  }
+}
 
 html,
 body,
@@ -26,6 +51,18 @@ body {
   /* overflow: hidden; */
 }
 
+/* 深色主题下的 body 背景 */
+.dark body {
+  background-color: #0f1419 !important;
+  color: #f9fafb !important;
+}
+
+/* 深色主题下的根元素 */
+.dark {
+  background-color: #0f1419 !important;
+  color: #f9fafb !important;
+}
+
 #app {
   height: 100vh;
   /* overflow: hidden; */
@@ -50,8 +87,8 @@ body {
 }
 
 /* 添加系统主题css变量 */
-@theme {
-  --color-primary: 
+:root {
+  --color-primary: #3b82f6;
 }
 
 /* 心情滑块样式 */

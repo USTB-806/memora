@@ -1,17 +1,17 @@
 <template>
-  <div class="flex-1 flex flex-col bg-white">
+  <div class="flex-1 flex flex-col bg-white dark:bg-slate-900">
     <!-- 主内容区 -->
-    <div class="bg-white/90 glass-effect border border-gray-100 h-full min-h-0" style="padding: 16px;">
+    <div class="bg-white/90 dark:bg-slate-800/95 glass-effect border border-gray-100 dark:border-gray-700 h-full min-h-0" style="padding: 16px;">
 
 
       <!-- 标题区域 -->
-          <div class="flex items-center justify-between sticky top-0 z-10 bg-white/90 glass-effect  w-full px-4 py-4">
+          <div class="flex items-center justify-between sticky top-0 z-10 bg-white/90 dark:bg-slate-800/95 glass-effect  w-full px-4 py-4">
             <div class="flex items-center">
               <div class="bg-gradient-to-br rounded-lg flex items-center justify-center w-8 h-8 mr-3">
                 <Earth class="text-black-400 w-8 h-8" />
               </div>
               <div>
-                <h1 class="text-2xl font-bold text-gray-900">{{ t('community.title') }}</h1>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ t('community.title') }}</h1>
               </div>
             </div>
             <!-- 刷新按钮 -->
@@ -28,7 +28,7 @@
 
         <!-- 加载状态 -->
         <div v-if="loading && posts.length === 0" class="flex justify-center py-12">
-          <div class="flex items-center gap-2 text-gray-500">
+          <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <div class="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
             {{ t('community.loading') }}
           </div>
@@ -39,7 +39,7 @@
           <div
             v-for="post in posts"
             :key="post.id"
-            class="bg-white rounded-lg overflow-hidden transition-all duration-200"
+            class="bg-white dark:bg-slate-800 rounded-lg overflow-hidden transition-all duration-200"
           >
             <!-- 推文头部 -->
             <div class="p-4 ">
@@ -47,11 +47,11 @@
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                     <img v-if="post.avatar_url" :src="post.avatar_url" :alt="t('profile.avatar')" class="w-full h-full object-cover">
-                    <User v-else class="w-6 h-6 text-gray-500" />
+                    <User v-else class="w-6 h-6 text-gray-500 dark:text-gray-400" />
                   </div>
                   <div>
-                    <div class="font-medium text-gray-900">{{ post.username }}</div>
-                    <div class="text-xs text-gray-500">{{ formatDate(post.created_at) }}</div>
+                    <div class="font-medium text-gray-900 dark:text-gray-100">{{ post.username }}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(post.created_at) }}</div>
                   </div>
                 </div>
                 <button
@@ -64,7 +64,7 @@
               </div>
 
               <!-- 推文描述 -->
-              <div v-if="post.description" class="mt-3 text-gray-700">
+              <div v-if="post.description" class="mt-3 text-gray-700 dark:text-gray-300">
                 <div 
                   :class="[
                     'transition-all duration-200',
@@ -93,7 +93,7 @@
               >
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <BookmarkIcon class="w-4 h-4 text-gray-500" />
+                    <BookmarkIcon class="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     <span v-if="post.category_name" class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">
                       {{ post.category_name }}
                     </span>
@@ -101,7 +101,7 @@
                     <span
                       v-for="tag in post.tags?.split(',') || []"
                       :key="tag"
-                      class="px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded"
+                      class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded"
                     >
                       #{{ tag.trim() }}
                     </span>
@@ -111,10 +111,10 @@
                 
                 <!-- 收藏详情 -->
                 <div v-if="post.collection_details" class="mt-2">
-                  <h4 v-if="post.collection_details.title" class="font-medium text-gray-900 mb-1 hover:text-blue-700 transition-colors">
+                  <h4 v-if="post.collection_details.title" class="font-medium text-gray-900 dark:text-gray-100 mb-1 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">
                     {{ decodeHtmlEntities(post.collection_details.title) }}
                   </h4>
-                  <p v-if="post.collection_details.summary" class="text-sm text-gray-600 line-clamp-2">
+                  <p v-if="post.collection_details.summary" class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                     {{ parseSummary(post.collection_details.summary) }}
                   </p>
                 </div>
@@ -186,16 +186,16 @@
                   :key="comment.id"
                   class="flex gap-3 mb-4 last:mb-0"
                 >
-                  <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  <div class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                     <img v-if="comment.avatar_url" :src="comment.avatar_url" :alt="t('community.commentAvatar')" class="w-full h-full object-cover">
-                    <User v-else class="w-6 h-6 text-gray-500" />
+                    <User v-else class="w-6 h-6 text-gray-500 dark:text-gray-400" />
                   </div>
                   <div class="flex-1">
-                    <div class="bg-gray-50 rounded-lg p-3">
+                    <div class="bg-gray-50 dark:bg-slate-800 rounded-lg p-3">
                       <div class="flex items-center justify-between mb-1">
-                        <span class="font-medium text-sm text-gray-900">{{ comment.username }}</span>
+                        <span class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ comment.username }}</span>
                         <div class="flex items-center gap-2">
-                          <span class="text-xs text-gray-500">{{ formatDate(comment.created_at) }}</span>
+                          <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(comment.created_at) }}</span>
                           <button
                             v-if="isMyComment(comment)"
                             @click="deleteCommentById(comment.id)"
@@ -205,7 +205,7 @@
                           </button>
                         </div>
                       </div>
-                      <p class="text-sm text-gray-700">{{ decodeHtmlEntities(comment.content) }}</p>
+                      <p class="text-sm text-gray-700 dark:text-gray-300">{{ decodeHtmlEntities(comment.content) }}</p>
                     </div>
                     
                     <!-- 评论点赞 -->

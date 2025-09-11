@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full bg-gray-50 overflow-y-auto relative">
+  <div class="h-full bg-gray-50 dark:bg-slate-900 overflow-y-auto relative">
     <!-- 背景动画 -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
       <div class="particles-container">
@@ -23,11 +23,11 @@
 
     <!-- 设置内容 -->
     <div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8 relative z-20">
-      <h1 class="text-3xl font-bold text-gray-900 mb-8">{{ t('settings.title') }}</h1>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">{{ t('settings.title') }}</h1>
 
       <!-- 语言设置 -->
-      <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ t('settings.language') }}</h2>
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ t('settings.language') }}</h2>
         <div class="space-y-3">
           <div class="flex items-center">
             <input
@@ -36,9 +36,9 @@
               :value="'en'"
               v-model="selectedLanguage"
               @change="changeLanguage"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
             />
-            <label for="en" class="ml-3 block text-sm font-medium text-gray-700">
+            <label for="en" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
               English
             </label>
           </div>
@@ -49,10 +49,56 @@
               :value="'zh'"
               v-model="selectedLanguage"
               @change="changeLanguage"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
             />
-            <label for="zh" class="ml-3 block text-sm font-medium text-gray-700">
+            <label for="zh" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
               中文
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 主题设置 -->
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ t('settings.theme') }}</h2>
+        <div class="space-y-3">
+          <div class="flex items-center">
+            <input
+              id="light"
+              type="radio"
+              :value="'light'"
+              v-model="selectedTheme"
+              @change="changeTheme"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
+            />
+            <label for="light" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {{ t('settings.light') }}
+            </label>
+          </div>
+          <div class="flex items-center">
+            <input
+              id="dark"
+              type="radio"
+              :value="'dark'"
+              v-model="selectedTheme"
+              @change="changeTheme"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
+            />
+            <label for="dark" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {{ t('settings.dark') }}
+            </label>
+          </div>
+          <div class="flex items-center">
+            <input
+              id="system"
+              type="radio"
+              :value="'system'"
+              v-model="selectedTheme"
+              @change="changeTheme"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
+            />
+            <label for="system" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {{ t('settings.system') }}
             </label>
           </div>
         </div>
@@ -64,14 +110,21 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useTheme } from '../composables/useTheme'
 
 const { t, locale } = useI18n()
+const { theme, setTheme, initTheme } = useTheme()
 
 const selectedLanguage = ref(locale.value)
+const selectedTheme = ref('light')
 
 const changeLanguage = () => {
   locale.value = selectedLanguage.value
   localStorage.setItem('language', selectedLanguage.value)
+}
+
+const changeTheme = () => {
+  setTheme(selectedTheme.value)
 }
 
 onMounted(() => {
@@ -80,6 +133,10 @@ onMounted(() => {
     selectedLanguage.value = savedLanguage
     locale.value = savedLanguage
   }
+
+  const savedTheme = localStorage.getItem('theme') || 'light'
+  selectedTheme.value = savedTheme
+  initTheme()
 })
 </script>
 

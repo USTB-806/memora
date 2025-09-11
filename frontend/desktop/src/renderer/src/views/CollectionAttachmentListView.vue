@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
-    <header class="border-b border-gray-200 bg-white">
+    <header class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
       <div class="max-w-6xl mx-auto px-6 py-8">
         <button
           @click="$router.back()"
@@ -20,9 +20,9 @@
         </button>
         <div class="flex items-center gap-3 mb-2">
           <ImageIcon class="w-6 h-6 text-black" />
-          <h1 class="text-2xl font-bold text-black">附件收藏</h1>
+          <h1 class="text-2xl font-bold text-black dark:text-gray-100">附件收藏</h1>
         </div>
-        <p class="text-gray-500">分类 #{{ categoryId }} 下的所有附件</p>
+        <p class="text-gray-500 dark:text-gray-400">分类 #{{ categoryId }} 下的所有附件</p>
       </div>
     </header>
 

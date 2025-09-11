@@ -645,4 +645,54 @@ onUnmounted(() => {
     }
   }
 }
+
+// 深色主题支持
+.dark {
+  .detail-page {
+    background-color: #111827;
+
+    .page-header {
+      background-color: #1f2937;
+      border-bottom: 1px solid #374151;
+
+      .header-content {
+        .back-btn {
+          background-color: #374151;
+          color: #d1d5db;
+
+          &:hover {
+            background-color: #4b5563;
+          }
+        }
+
+        .page-title {
+          color: #f9fafb;
+        }
+      }
+    }
+
+    .main-content {
+      .attachment-preview {
+        .image-container {
+          background-color: #374151;
+        }
+      }
+
+      .attachment-info {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+
+        .info-item {
+          .info-label {
+            color: #9ca3af;
+          }
+
+          .info-value {
+            color: #f9fafb;
+          }
+        }
+      }
+    }
+  }
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="min-h-screen bg-white dark:bg-gray-900">
     <!-- Header -->
-    <header class="border-b border-gray-200 flex-shrink-0 sticky top-0 bg-white z-10">
+    <header class="border-b border-gray-200 dark:border-gray-700 flex-shrink-0 sticky top-0 bg-white dark:bg-gray-800 z-10">
       <div class="max-w-6xl mx-auto px-6 py-5">
         <div class="flex justify-between items-start mb-2">
           <button @click="$router.back()"
@@ -16,10 +16,10 @@
         </div>
           <div class="flex items-center gap-3 mb-2">
             <BookmarkIcon class="w-6 h-6 text-black" />
-            <h1 class="text-2xl font-bold text-black">{{ t('community.postCollectionDetail') }}</h1>
+            <h1 class="text-2xl font-bold text-black dark:text-gray-100">{{ t('community.postCollectionDetail') }}</h1>
           </div>
 
-        <p class="text-gray-600">{{ t('community.viewPostCollection') }}</p>
+        <p class="text-gray-600 dark:text-gray-400">{{ t('community.viewPostCollection') }}</p>
       </div>
     </header>
 

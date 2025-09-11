@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="min-h-screen bg-white dark:bg-gray-900">
     <!-- Header -->
     <header class="border-b border-gray-200">
       <div class="max-w-4xl mx-auto px-6 py-8">
@@ -20,9 +20,9 @@
         </button>
         <div class="flex items-center gap-3 mb-2">
           <BookmarkIcon class="w-6 h-6 text-black" />
-          <h1 class="text-2xl font-bold text-black">网页收藏详情</h1>
+          <h1 class="text-2xl font-bold text-black dark:text-gray-100">网页收藏详情</h1>
         </div>
-        <p class="text-gray-600">查看收藏的详细内容</p>
+        <p class="text-gray-600 dark:text-gray-400">查看收藏的详细内容</p>
       </div>
     </header>
 

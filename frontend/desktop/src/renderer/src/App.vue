@@ -1,9 +1,9 @@
 <template>
-  <div class="flex h-full bg-gray-50/80 overflow-hidden">
+  <div class="flex h-full bg-gray-50/80 dark:bg-slate-900/95 overflow-hidden">
     <!-- 侧边栏 -->
     <div
       :class="[
-        'bg-white/90 glass-effect border-r border-gray-100 flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out',
+        'bg-white/90 glass-effect border-r border-gray-100 dark:border-gray-700 flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out sidebar-bg',
         sidebarExpanded ? 'w-56' : 'w-24'
       ]"
       @mouseenter="handleSidebarEnter"
@@ -30,7 +30,7 @@
               sidebarExpanded ? 'opacity-100 max-w-none' : 'opacity-0 max-w-0'
             ]"
           >
-            <h1 class="text-xl font-bold text-gray-900 whitespace-nowrap">{{ t('app.title') }}</h1>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{{ t('app.title') }}</h1>
           </div>
         </div>
       </div>
@@ -51,7 +51,7 @@
                 sidebarExpanded ? 'w-full space-x-3 px-3 py-2.5' : 'w-12 h-12 justify-center',
                 isActiveMenu(item)
                   ? 'sidebar-acive-btn'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
               ]"
               :title="!sidebarExpanded ? item.name : ''"
               @click="goMenu(item)"
@@ -77,7 +77,7 @@
       </nav>
     </div>
     <!-- 主内容区 -->
-    <div class="flex-1 flex flex-col min-w-0">
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-slate-900">
       <router-view style="overflow-y: scroll" />
     </div>
   </div>
@@ -153,6 +153,12 @@ const isActiveMenu = (item) => {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
+.sidebar-bg {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+.dark .sidebar-bg {
+  background-color: #3b3b3b !important;
+}
 .sidebar-acive-btn {
   background-color: #e9eaea;
 }
@@ -163,6 +169,12 @@ const isActiveMenu = (item) => {
 .btn-hover:hover {
   background-color: #e9eaea;
   transform: none;
+}
+.dark .sidebar-acive-btn {
+  background-color: #374151;
+}
+.dark .btn-hover:hover {
+  background-color: #374151;
 }
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;

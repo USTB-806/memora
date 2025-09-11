@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen bg-white flex flex-col">
+  <div class="h-screen bg-white dark:bg-gray-900 flex flex-col">
     <!-- Header -->
     <header class="border-b border-gray-200 flex-shrink-0">
       <div class="max-w-6xl mx-auto px-6 py-5">
@@ -25,7 +25,7 @@
         <div class="flex items-center gap-3 mb-2" style="justify-content: space-between">
           <div>
             <BookmarkIcon class="w-6 h-6 text-black" />
-            <h1 class="text-2xl font-bold text-black">
+            <h1 class="text-2xl font-bold text-black dark:text-gray-100">
               {{ category?.emoji }} {{ category?.name }}
             </h1>
           </div>

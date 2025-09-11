@@ -136,6 +136,10 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
-    "selectLanguage": "Select Language"
+    "selectLanguage": "Select Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Follow System"
   }
 }
