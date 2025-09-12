@@ -5,17 +5,17 @@ import { electronAPI } from '@electron-toolkit/preload'
 interface CustomAPI {
   // 主窗口控制
   showMainWindow: () => Promise<{ success: boolean; error?: string }>
-  
+
   // 快速窗口控制
   hideQuickWindow: () => Promise<{ success: boolean; error?: string }>
-  
+
   // 获取 Edge 浏览器链接
   captureEdgeUrl: () => Promise<{
     success: boolean
     url?: string
     error?: string
   }>
-  
+
   // 检测活跃浏览器
   detectActiveBrowser: () => Promise<{
     success: boolean
@@ -24,10 +24,10 @@ interface CustomAPI {
     windowTitle: string
     error?: string
   }>
-  
+
   // 获取操作系统信息
   getPlatform: () => NodeJS.Platform
-  
+
   // 其他实用功能
   ping: () => void
 }
@@ -63,7 +63,7 @@ const api: CustomAPI = {
 const electronAPIExtended: ElectronAPIExtended = {
   invoke: (channel: string, ...args: any[]) => ipcRenderer.invoke(channel, ...args),
   send: (channel: string, ...args: any[]) => ipcRenderer.send(channel, ...args),
-  on: (channel: string, func: (...args: any[]) => void) => 
+  on: (channel: string, func: (...args: any[]) => void) =>
     ipcRenderer.on(channel, (_event: IpcRendererEvent, ...args: any[]) => func(...args)),
   getPlatform: () => process.platform
 }

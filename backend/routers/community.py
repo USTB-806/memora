@@ -85,7 +85,7 @@ class PostResponse(BaseModel):
 async def create_post(
     request: CreatePostRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     创建推文（发布收藏到社区）
@@ -93,69 +93,55 @@ async def create_post(
     """
     # 检查收藏是否属于当前用户
     collection_query = select(Collection).where(
-        Collection.id == request.refer_collection_id,
-        Collection.user_id == current_user.id
+        Collection.id == request.refer_collection_id, Collection.user_id == current_user.id
     )
     collection_result = await db.execute(collection_query)
     collection = collection_result.scalar_one_or_none()
-    
+
     if not collection:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="收藏不存在或您无权访问"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="收藏不存在或您无权访问")
+
     # 创建推文（允许同一收藏多次分享）
     new_post = Post(
         user_id=current_user.id,
         refer_collection_id=request.refer_collection_id,
-        description=request.description
+        description=request.description,
     )
     db.add(new_post)
     await db.commit()
     await db.refresh(new_post)
-    
+
     return Response(
         code=200,
         message="推文发布成功",
         data={
             "post_id": new_post.post_id,
             "refer_collection_id": new_post.refer_collection_id,
-            "description": new_post.description
-        }
+            "description": new_post.description,
+        },
     )
 
 
 @router.delete("/posts/{post_id}", response_model=Response)
 async def delete_post(
-    post_id: str,  # 使用UUID字符串
+    post_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),  # 使用UUID字符串
 ):
     """
     删除推文（只能删除自己的推文）
     """
-    post_query = select(Post).where(
-        Post.post_id == post_id,
-        Post.user_id == current_user.id
-    )
+    post_query = select(Post).where(Post.post_id == post_id, Post.user_id == current_user.id)
     post_result = await db.execute(post_query)
     post = post_result.scalar_one_or_none()
-    
+
     if not post:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="推文不存在或您无权删除"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="推文不存在或您无权删除")
+
     await db.delete(post)
     await db.commit()
-    
-    return Response(
-        code=200,
-        message="推文删除成功",
-        data={"post_id": post_id}
-    )
+
+    return Response(code=200, message="推文删除成功", data={"post_id": post_id})
 
 
 @router.get("/posts", response_model=Response)
@@ -163,37 +149,39 @@ async def get_posts(
     page: int = 1,
     limit: int = 20,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     获取社区推文列表
     """
     offset = (page - 1) * limit
-    
+
     # 获取推文列表，包含用户信息、收藏信息、分类信息、点赞数、评论数
     posts_query = (
         select(
             Post,
             User,
             Collection,
-            Category.name.label('category_name'),
-            func.count(Like.id.distinct()).label('likes_count'),
-            func.count(Comment.id.distinct()).label('comments_count')
+            Category.name.label("category_name"),
+            func.count(Like.id.distinct()).label("likes_count"),
+            func.count(Comment.id.distinct()).label("comments_count"),
         )
         .join(User, Post.user_id == User.id)
         .join(Collection, Post.refer_collection_id == Collection.id)
         .outerjoin(Category, Collection.category_id == Category.id)
         .outerjoin(Like, and_(Like.asset_id == Post.id, Like.asset_type == AssetType.post))
         .outerjoin(Comment, Comment.post_id == Post.id)
-        .group_by(Post.id, User.id, User.username, User.avatar_attachment_id, Collection.id, Category.name)
+        .group_by(
+            Post.id, User.id, User.username, User.avatar_attachment_id, Collection.id, Category.name
+        )
         .order_by(desc(Post.created_at))
         .offset(offset)
         .limit(limit)
     )
-    
+
     posts_result = await db.execute(posts_query)
     posts_data = posts_result.all()
-    
+
     posts = []
     for row in posts_data:
         post = row[0]
@@ -202,25 +190,25 @@ async def get_posts(
         category_name = row[3]
         likes_count = row[4]
         comments_count = row[5]
-        
+
         # 检查当前用户是否已点赞
         like_query = select(Like).where(
             and_(
                 Like.asset_id == post.id,
                 Like.asset_type == AssetType.post,
-                Like.user_id == current_user.id
+                Like.user_id == current_user.id,
             )
         )
         like_result = await db.execute(like_query)
         is_liked_by_me = like_result.scalar_one_or_none() is not None
-        
+
         # 获取收藏详情
         details_query = select(CollectionDetail).where(
             CollectionDetail.collection_id == collection.id
         )
         details_result = await db.execute(details_query)
         details = details_result.scalars().all()
-        
+
         posts.append(
             PostResponse(
                 id=post.id,
@@ -239,18 +227,16 @@ async def get_posts(
                 is_liked_by_me=is_liked_by_me,
                 created_at=post.created_at.replace(tzinfo=timezone.utc).isoformat(),
                 updated_at=post.updated_at.replace(tzinfo=timezone.utc).isoformat(),
-                user=UserInfo(id=user.id, username=user.username, avatar_attachment_id=user.avatar_attachment_id)
+                user=UserInfo(
+                    id=user.id,
+                    username=user.username,
+                    avatar_attachment_id=user.avatar_attachment_id,
+                ),
             )
         )
-    
+
     return Response(
-        code=200,
-        message="推文列表获取成功",
-        data={
-            "posts": posts,
-            "page": page,
-            "limit": limit
-        }
+        code=200, message="推文列表获取成功", data={"posts": posts, "page": page, "limit": limit}
     )
 
 
@@ -259,7 +245,7 @@ async def get_my_posts(
     page: int = 1,
     limit: int = 20,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     获取当前用户发送的推文列表
@@ -271,9 +257,9 @@ async def get_my_posts(
             Post,
             User,
             Collection,
-            Category.name.label('category_name'),
-            func.count(Like.id.distinct()).label('likes_count'),
-            func.count(Comment.id.distinct()).label('comments_count')
+            Category.name.label("category_name"),
+            func.count(Like.id.distinct()).label("likes_count"),
+            func.count(Comment.id.distinct()).label("comments_count"),
         )
         .join(User, Post.user_id == User.id)
         .join(Collection, Post.refer_collection_id == Collection.id)
@@ -281,7 +267,9 @@ async def get_my_posts(
         .outerjoin(Like, and_(Like.asset_id == Post.id, Like.asset_type == AssetType.post))
         .outerjoin(Comment, Comment.post_id == Post.id)
         .where(Post.user_id == current_user.id)
-        .group_by(Post.id, User.id, User.username, User.avatar_attachment_id, Collection.id, Category.name)
+        .group_by(
+            Post.id, User.id, User.username, User.avatar_attachment_id, Collection.id, Category.name
+        )
         .order_by(desc(Post.created_at))
         .offset(offset)
         .limit(limit)
@@ -304,7 +292,7 @@ async def get_my_posts(
             and_(
                 Like.asset_id == post.id,
                 Like.asset_type == AssetType.post,
-                Like.user_id == current_user.id
+                Like.user_id == current_user.id,
             )
         )
         like_result = await db.execute(like_query)
@@ -335,18 +323,18 @@ async def get_my_posts(
                 is_liked_by_me=is_liked_by_me,
                 created_at=post.created_at.replace(tzinfo=timezone.utc).isoformat(),
                 updated_at=post.updated_at.replace(tzinfo=timezone.utc).isoformat(),
-                user=UserInfo(id=user.id, username=user.username, avatar_attachment_id=user.avatar_attachment_id)
+                user=UserInfo(
+                    id=user.id,
+                    username=user.username,
+                    avatar_attachment_id=user.avatar_attachment_id,
+                ),
             )
         )
 
     return Response(
         code=200,
         message="当前用户推文列表获取成功",
-        data={
-            "posts": posts,
-            "page": page,
-            "limit": limit
-        }
+        data={"posts": posts, "page": page, "limit": limit},
     )
 
 
@@ -354,68 +342,57 @@ async def get_my_posts(
 async def like_asset(
     request: LikeRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     点赞推文或评论
     """
     # 验证 asset_type
-    if request.asset_type not in ['post', 'comment']:
+    if request.asset_type not in ["post", "comment"]:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="资产类型必须是 'post' 或 'comment'"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="资产类型必须是 'post' 或 'comment'"
         )
-    
+
     asset_type = AssetType(request.asset_type)
-    
+
     # 验证资产是否存在
     if asset_type == AssetType.post:
         asset_query = select(Post).where(Post.id == request.asset_id)
     else:
         asset_query = select(Comment).where(Comment.id == request.asset_id)
-    
+
     asset_result = await db.execute(asset_query)
     asset = asset_result.scalar_one_or_none()
-    
+
     if not asset:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"{'推文' if asset_type == AssetType.post else '评论'}不存在"
+            detail=f"{'推文' if asset_type == AssetType.post else '评论'}不存在",
         )
-    
+
     # 检查是否已点赞
     existing_like_query = select(Like).where(
         and_(
             Like.asset_id == request.asset_id,
             Like.asset_type == asset_type,
-            Like.user_id == current_user.id
+            Like.user_id == current_user.id,
         )
     )
     existing_like_result = await db.execute(existing_like_query)
     existing_like = existing_like_result.scalar_one_or_none()
-    
+
     if existing_like:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="您已经点赞过该内容"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="您已经点赞过该内容")
+
     # 创建点赞记录
-    new_like = Like(
-        user_id=current_user.id,
-        asset_id=request.asset_id,
-        asset_type=asset_type
-    )
+    new_like = Like(user_id=current_user.id, asset_id=request.asset_id, asset_type=asset_type)
     db.add(new_like)
     await db.commit()
-    
+
     return Response(
         code=200,
         message="点赞成功",
-        data={
-            "asset_id": request.asset_id,
-            "asset_type": request.asset_type
-        }
+        data={"asset_id": request.asset_id, "asset_type": request.asset_type},
     )
 
 
@@ -423,48 +400,41 @@ async def like_asset(
 async def unlike_asset(
     request: LikeRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     取消点赞推文或评论
     """
     # 验证 asset_type
-    if request.asset_type not in ['post', 'comment']:
+    if request.asset_type not in ["post", "comment"]:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="资产类型必须是 'post' 或 'comment'"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="资产类型必须是 'post' 或 'comment'"
         )
-    
+
     asset_type = AssetType(request.asset_type)
-    
+
     # 查找现有点赞记录
     like_query = select(Like).where(
         and_(
             Like.asset_id == request.asset_id,
             Like.asset_type == asset_type,
-            Like.user_id == current_user.id
+            Like.user_id == current_user.id,
         )
     )
     like_result = await db.execute(like_query)
     like = like_result.scalar_one_or_none()
-    
+
     if not like:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="您还未点赞该内容"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="您还未点赞该内容")
+
     # 删除点赞记录
     await db.delete(like)
     await db.commit()
-    
+
     return Response(
         code=200,
         message="取消点赞成功",
-        data={
-            "asset_id": request.asset_id,
-            "asset_type": request.asset_type
-        }
+        data={"asset_id": request.asset_id, "asset_type": request.asset_type},
     )
 
 
@@ -473,7 +443,7 @@ async def create_comment(
     post_id: str,  # 使用UUID字符串
     request: CreateCommentRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     为推文添加评论
@@ -482,23 +452,18 @@ async def create_comment(
     post_query = select(Post).where(Post.post_id == post_id)
     post_result = await db.execute(post_query)
     post = post_result.scalar_one_or_none()
-    
+
     if not post:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="推文不存在"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="推文不存在")
+
     # 创建评论
     new_comment = Comment(
-        post_id=post.id,  # 使用数据库ID
-        user_id=current_user.id,
-        content=request.content
-    )
+        post_id=post.id, user_id=current_user.id, content=request.content
+    )  # 使用数据库ID
     db.add(new_comment)
     await db.commit()
     await db.refresh(new_comment)
-    
+
     return Response(
         code=200,
         message="评论添加成功",
@@ -513,9 +478,13 @@ async def create_comment(
                 is_liked_by_me=False,
                 created_at=new_comment.created_at.replace(tzinfo=timezone.utc).isoformat(),
                 updated_at=new_comment.updated_at.replace(tzinfo=timezone.utc).isoformat(),
-                user=UserInfo(id=current_user.id, username=current_user.username, avatar_attachment_id=current_user.avatar_attachment_id)
+                user=UserInfo(
+                    id=current_user.id,
+                    username=current_user.username,
+                    avatar_attachment_id=current_user.avatar_attachment_id,
+                ),
             )
-        }
+        },
     )
 
 
@@ -525,7 +494,7 @@ async def get_post_comments(
     page: int = 1,
     limit: int = 20,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     获取推文的评论列表
@@ -534,22 +503,15 @@ async def get_post_comments(
     post_query = select(Post).where(Post.post_id == post_id)
     post_result = await db.execute(post_query)
     post = post_result.scalar_one_or_none()
-    
+
     if not post:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="推文不存在"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="推文不存在")
+
     offset = (page - 1) * limit
-    
+
     # 获取评论列表
     comments_query = (
-        select(
-            Comment,
-            User,
-            func.count(Like.id).label('likes_count')
-        )
+        select(Comment, User, func.count(Like.id).label("likes_count"))
         .join(User, Comment.user_id == User.id)
         .outerjoin(Like, and_(Like.asset_id == Comment.id, Like.asset_type == AssetType.comment))
         .where(Comment.post_id == post.id)
@@ -560,24 +522,24 @@ async def get_post_comments(
     )
     comments_result = await db.execute(comments_query)
     comments_data = comments_result.all()
-    
+
     comments = []
     for row in comments_data:
         comment = row[0]
         user = row[1]
         likes_count = row[2]
-        
+
         # 检查当前用户是否已点赞该评论
         like_query = select(Like).where(
             and_(
                 Like.asset_id == comment.id,
                 Like.asset_type == AssetType.comment,
-                Like.user_id == current_user.id
+                Like.user_id == current_user.id,
             )
         )
         like_result = await db.execute(like_query)
         is_liked_by_me = like_result.scalar_one_or_none() is not None
-        
+
         comments.append(
             CommentResponse(
                 id=comment.id,
@@ -589,18 +551,18 @@ async def get_post_comments(
                 is_liked_by_me=is_liked_by_me,
                 created_at=comment.created_at.replace(tzinfo=timezone.utc).isoformat(),
                 updated_at=comment.updated_at.replace(tzinfo=timezone.utc).isoformat(),
-                user=UserInfo(id=user.id, username=user.username, avatar_attachment_id=user.avatar_attachment_id)
+                user=UserInfo(
+                    id=user.id,
+                    username=user.username,
+                    avatar_attachment_id=user.avatar_attachment_id,
+                ),
             )
         )
-    
+
     return Response(
         code=200,
         message="评论列表获取成功",
-        data={
-            "comments": comments,
-            "page": page,
-            "limit": limit
-        }
+        data={"comments": comments, "page": page, "limit": limit},
     )
 
 
@@ -608,41 +570,32 @@ async def get_post_comments(
 async def delete_comment(
     comment_id: int,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     删除评论（只能删除自己的评论）
     """
     # 查找评论
     comment_query = select(Comment).where(
-        Comment.id == comment_id,
-        Comment.user_id == current_user.id
+        Comment.id == comment_id, Comment.user_id == current_user.id
     )
     comment_result = await db.execute(comment_query)
     comment = comment_result.scalar_one_or_none()
-    
+
     if not comment:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="评论不存在或您无权删除"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="评论不存在或您无权删除")
+
     # 删除评论
     await db.delete(comment)
     await db.commit()
-    
-    return Response(
-        code=200,
-        message="评论删除成功",
-        data={"comment_id": comment_id}
-    )
+
+    return Response(code=200, message="评论删除成功", data={"comment_id": comment_id})
 
 
 @router.get("/posts/{post_id}/collection", response_model=Response)
 async def get_post_collection_details(
-    post_id: str,  # 使用UUID字符串
-    db: AsyncSession = Depends(get_db)
-):
+    post_id: str, db: AsyncSession = Depends(get_db)
+):  # 使用UUID字符串
     """
     获取推文关联的收藏详情（公共接口，无需登录）
     """
@@ -650,31 +603,23 @@ async def get_post_collection_details(
     post_query = select(Post).where(Post.post_id == post_id)
     post_result = await db.execute(post_query)
     post = post_result.scalar_one_or_none()
-    
+
     if not post:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="推文不存在"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="推文不存在")
+
     # 获取收藏信息
     collection_query = select(Collection).where(Collection.id == post.refer_collection_id)
     collection_result = await db.execute(collection_query)
     collection = collection_result.scalar_one_or_none()
-    
+
     if not collection:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="收藏不存在"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="收藏不存在")
+
     # 获取收藏详情
-    details_query = select(CollectionDetail).where(
-        CollectionDetail.collection_id == collection.id
-    )
+    details_query = select(CollectionDetail).where(CollectionDetail.collection_id == collection.id)
     details_result = await db.execute(details_query)
     details = details_result.scalars().all()
-    
+
     # 获取分类信息
     category_name = None
     if collection.category_id:
@@ -683,7 +628,7 @@ async def get_post_collection_details(
         category = category_result.scalar_one_or_none()
         if category:
             category_name = category.name
-    
+
     return Response(
         code=200,
         message="收藏详情获取成功",
@@ -697,5 +642,5 @@ async def get_post_collection_details(
                 "created_at": collection.created_at.replace(tzinfo=timezone.utc).isoformat(),
                 "updated_at": collection.updated_at.replace(tzinfo=timezone.utc).isoformat(),
             }
-        }
+        },
     )

@@ -17,7 +17,10 @@ export const createCategoryApi = async (categoryData: any): Promise<ApiResponse<
 }
 
 // 更新分类
-export const updateCategoryApi = async (categoryId: string | number, categoryData: any): Promise<ApiResponse<any>> => {
+export const updateCategoryApi = async (
+  categoryId: string | number,
+  categoryData: any
+): Promise<ApiResponse<any>> => {
   return await api.put(`/api/v1/category/${categoryId}`, categoryData)
 }
 
@@ -27,14 +30,19 @@ export const deleteCategoryApi = async (categoryId: string | number): Promise<Ap
 }
 
 // 创建知识库
-export const createKnowledgeBaseApi = async (categoryId: string | number): Promise<ApiResponse<any>> => {
+export const createKnowledgeBaseApi = async (
+  categoryId: string | number
+): Promise<ApiResponse<any>> => {
   return await api.post('/api/v1/category/create_knowledge_base', null, {
     params: { category_id: categoryId }
   })
 }
 
 // 查询知识库
-export const queryKnowledgeBaseApi = async (categoryId: string | number, query: string): Promise<ApiResponse<any>> => {
+export const queryKnowledgeBaseApi = async (
+  categoryId: string | number,
+  query: string
+): Promise<ApiResponse<any>> => {
   return await api.get(`/api/v1/category/knowledge_base/${categoryId}`, {
     params: { query }
   })
@@ -89,7 +97,10 @@ export const createCategory = async (categoryData: any): Promise<any> => {
 }
 
 // 更新分类 (服务层)
-export const updateCategory = async (categoryId: string | number, categoryData: any): Promise<any> => {
+export const updateCategory = async (
+  categoryId: string | number,
+  categoryData: any
+): Promise<any> => {
   try {
     const response = await updateCategoryApi(categoryId, categoryData)
 
@@ -137,7 +148,10 @@ export const createKnowledgeBase = async (categoryId: string | number): Promise<
 }
 
 // 查询知识库 (服务层)
-export const queryKnowledgeBase = async (categoryId: string | number, query: string): Promise<any> => {
+export const queryKnowledgeBase = async (
+  categoryId: string | number,
+  query: string
+): Promise<any> => {
   try {
     const response = await queryKnowledgeBaseApi(categoryId, query)
 

@@ -5,13 +5,11 @@ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 
 class ChromaDBManager:
-    def __init__(
-        self, emb_api_key: str, emb_base_url: str, emb_model_name: str
-    ) -> None:
+    def __init__(self, emb_api_key: str, emb_base_url: str, emb_model_name: str) -> None:
         self.chroma_client = chromadb.PersistentClient(
             path="./chroma_db",
         )
-        
+
         # 检查API配置是否完整
         if not emb_api_key or not emb_base_url or not emb_model_name:
             logger.warning(
@@ -33,7 +31,9 @@ class ChromaDBManager:
                 self.api_configured = True
                 logger.info("ChromaDB initialized successfully with OpenAI embedding function.")
             except Exception as e:
-                logger.warning(f"Failed to initialize OpenAI embedding function: {e}. Using default embedding.")
+                logger.warning(
+                    f"Failed to initialize OpenAI embedding function: {e}. Using default embedding."
+                )
                 self.embedding_function = None
                 self.api_configured = False
 
@@ -45,7 +45,9 @@ class ChromaDBManager:
                 embedding_function=self.embedding_function,  # type: ignore
             )
         else:
-            logger.warning(f"Creating collection '{name}' without custom embedding function due to missing API configuration.")
+            logger.warning(
+                f"Creating collection '{name}' without custom embedding function due to missing API configuration."
+            )
             return self.chroma_client.get_or_create_collection(name=name)
 
     def upsert(self, collection_name: str, documents: list[str], ids: list[str]):
@@ -56,7 +58,9 @@ class ChromaDBManager:
                 embedding_function=self.embedding_function,  # type: ignore
             )
         else:
-            logger.warning(f"Accessing collection '{collection_name}' without custom embedding function.")
+            logger.warning(
+                f"Accessing collection '{collection_name}' without custom embedding function."
+            )
             collection = self.chroma_client.get_collection(name=collection_name)
         collection.upsert(documents=documents, ids=ids)
 
@@ -64,13 +68,16 @@ class ChromaDBManager:
         """查询指定集合中的文档"""
         if self.api_configured:
             collection = self.chroma_client.get_collection(
-                name=collection_name, embedding_function=self.embedding_function # type: ignore
+                name=collection_name, embedding_function=self.embedding_function  # type: ignore
             )
         else:
-            logger.warning(f"Querying collection '{collection_name}' without custom embedding function.")
+            logger.warning(
+                f"Querying collection '{collection_name}' without custom embedding function."
+            )
             collection = self.chroma_client.get_collection(name=collection_name)
         results = collection.query(query_texts=[query], n_results=n_results)
         return results
+
 
 # global
 chroma_db_manager = ChromaDBManager(

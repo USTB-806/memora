@@ -7,20 +7,14 @@ from typing import AsyncGenerator
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./memora.db")
 
 # Create async SQLAlchemy engine
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=False  # Set to True for SQL query logging
-)
+engine = create_async_engine(DATABASE_URL, echo=False)  # Set to True for SQL query logging
 
 # Create async SessionLocal class
-AsyncSessionLocal = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
+AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 # Create Base for declarative models
 Base = declarative_base()
+
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
@@ -34,14 +28,17 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         finally:
             await session.close()
 
+
 async def create_tables():
     """
     Create all tables in the database.
     This should be called when the application starts.
     """
     from model import Base  # Import here to avoid circular imports
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
 
 async def drop_tables():
     """
@@ -49,8 +46,10 @@ async def drop_tables():
     Use with caution - this will delete all data!
     """
     from model import Base  # Import here to avoid circular imports
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
 
 async def reset_database():
     """

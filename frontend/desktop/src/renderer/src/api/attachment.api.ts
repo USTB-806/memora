@@ -37,7 +37,10 @@ export const deleteAttachmentApi = async (attachmentId: string | number) => {
 }
 
 // 上传附件 (服务层)
-export const uploadAttachment = async (file: File, description: string | null = null): Promise<Attachment> => {
+export const uploadAttachment = async (
+  file: File,
+  description: string | null = null
+): Promise<Attachment> => {
   try {
     const formData = new FormData()
     formData.append('file', file)

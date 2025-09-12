@@ -4,20 +4,27 @@
     <header class="border-b border-gray-200 flex-shrink-0 sticky top-0 bg-white z-10">
       <div class="max-w-6xl mx-auto px-6 py-5">
         <div class="flex justify-between items-start mb-2">
-          <button @click="$router.back()"
+          <button
+            @click="$router.back()"
             class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-gray-700 font-medium flex items-center gap-2"
-            style="font-size: 12px;">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            style="font-size: 12px"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
               <path d="M15 19l-7-7 7-7" />
             </svg>
             {{ t('collection.back') }}
           </button>
-          
         </div>
-          <div class="flex items-center gap-3 mb-2">
-            <BookmarkIcon class="w-6 h-6 text-black" />
-            <h1 class="text-2xl font-bold text-black">{{ t('community.postCollectionDetail') }}</h1>
-          </div>
+        <div class="flex items-center gap-3 mb-2">
+          <BookmarkIcon class="w-6 h-6 text-black" />
+          <h1 class="text-2xl font-bold text-black">{{ t('community.postCollectionDetail') }}</h1>
+        </div>
 
         <p class="text-gray-600">{{ t('community.viewPostCollection') }}</p>
       </div>
@@ -28,14 +35,18 @@
       <!-- 加载状态 -->
       <div v-if="loading" class="flex justify-center py-12">
         <div class="flex items-center gap-2 text-gray-500">
-          <div class="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+          <div
+            class="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"
+          ></div>
           {{ t('community.loadingPost') }}
         </div>
       </div>
 
       <!-- 错误状态 -->
       <div v-else-if="error" class="text-center py-16">
-        <div class="w-24 h-24 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div
+          class="w-24 h-24 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6"
+        >
           <AlertCircle class="w-12 h-12 text-red-600" />
         </div>
         <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ t('community.loadFailed') }}</h2>
@@ -79,22 +90,30 @@
             <div class="flex items-center gap-2">
               <CalendarIcon class="w-4 h-4 text-gray-500" />
               <span class="text-sm text-gray-600">{{ t('community.createdAt') }}</span>
-              <span class="text-sm font-medium text-gray-900">{{ collection ? formatDate(collection.created_at) : '--' }}</span>
+              <span class="text-sm font-medium text-gray-900">{{
+                collection ? formatDate(collection.created_at) : '--'
+              }}</span>
             </div>
             <div class="flex items-center gap-2">
               <ClockIcon class="w-4 h-4 text-gray-500" />
               <span class="text-sm text-gray-600">{{ t('community.updatedAt') }}</span>
-              <span class="text-sm font-medium text-gray-900">{{ collection ? formatDate(collection.updated_at) : '--' }}</span>
+              <span class="text-sm font-medium text-gray-900">{{
+                collection ? formatDate(collection.updated_at) : '--'
+              }}</span>
             </div>
             <div class="flex items-center gap-2">
               <TagIcon class="w-4 h-4 text-gray-500" />
               <span class="text-sm text-gray-600">{{ t('community.category') }}</span>
-              <span class="text-sm font-medium text-gray-900">{{ collection ? (collection.category_name || t('community.uncategorized')) : '--' }}</span>
+              <span class="text-sm font-medium text-gray-900">{{
+                collection ? collection.category_name || t('community.uncategorized') : '--'
+              }}</span>
             </div>
             <div class="flex items-center gap-2">
               <HashIcon class="w-4 h-4 text-gray-500" />
               <span class="text-sm text-gray-600">{{ t('community.tags') }}</span>
-              <span class="text-sm font-medium text-gray-900">{{ collection && collection.tags ? collection.tags.split(',').length : 0 }}个</span>
+              <span class="text-sm font-medium text-gray-900"
+                >{{ collection && collection.tags ? collection.tags.split(',').length : 0 }}个</span
+              >
             </div>
           </div>
 
@@ -109,14 +128,19 @@
               >
                 #{{ tag }}
               </span>
-              <span v-if="tagList.length === 0" class="text-sm text-gray-500">{{ t('community.noTags') }}</span>
+              <span v-if="tagList.length === 0" class="text-sm text-gray-500">{{
+                t('community.noTags')
+              }}</span>
             </div>
           </div>
         </div>
 
         <div class="p-6 pt-0">
           <!-- URL Display -->
-          <div v-if="collection && collection.details && collection.details.url" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div
+            v-if="collection && collection.details && collection.details.url"
+            class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200"
+          >
             <div class="flex items-center gap-2 mb-2">
               <ExternalLinkIcon class="w-4 h-4 text-gray-500" />
               <span class="text-sm font-medium text-black">{{ t('community.originalLink') }}</span>
@@ -133,7 +157,9 @@
 
           <!-- Content Preview -->
           <div v-if="collection && collection.details && collection.details.content">
-            <h3 class="text-lg font-semibold text-black mb-4">{{ t('community.contentPreview') }}</h3>
+            <h3 class="text-lg font-semibold text-black mb-4">
+              {{ t('community.contentPreview') }}
+            </h3>
             <div class="prose prose-gray max-w-none">
               <!-- 新增：md渲染 -->
               <div v-html="contentMarkdown"></div>
@@ -150,7 +176,9 @@
 
           <!-- 如果没有内容预览 -->
           <div v-else class="text-center py-8">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div
+              class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            >
               <FileText class="w-8 h-8 text-gray-400" />
             </div>
             <p class="text-gray-500">{{ t('community.noContentPreview') }}</p>
@@ -225,15 +253,15 @@ const error = ref(null)
 const fetchCollectionDetails = async () => {
   loading.value = true
   error.value = null
-  
+
   try {
     let result
-    
+
     // 如果有postId，使用推文收藏详情接口
     if (postId) {
       result = await getPostCollectionDetails(postId)
       console.log('推文收藏详情API返回结果:', result)
-      
+
       if (result && result.collection) {
         collection.value = result.collection
         console.log('设置collection对象 (result.collection):', collection.value)
@@ -256,12 +284,12 @@ const fetchCollectionDetails = async () => {
       } else {
         throw new Error('无法获取收藏详情')
       }
-    } 
+    }
     // 如果有collectionId，使用公共收藏详情接口
     else if (collectionId) {
       result = await getPublicCollectionDetails(collectionId)
       console.log('公共收藏详情API返回结果:', result)
-      
+
       if (result && result.collection) {
         collection.value = result.collection
         console.log('设置collection对象 (result.collection):', collection.value)
@@ -301,12 +329,15 @@ onMounted(() => {
 
 const tagList = computed(() => {
   if (!collection.value?.tags) return []
-  return collection.value.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+  return collection.value.tags
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter((tag) => tag)
 })
 
 const contentParagraphs = computed(() => {
   if (!collection.value?.details?.content) return []
-  return collection.value.details.content.split('\n\n').filter(p => p.trim())
+  return collection.value.details.content.split('\n\n').filter((p) => p.trim())
 })
 
 // 新增：正文 markdown 渲染
@@ -337,24 +368,24 @@ const formatDate = (dateString) => {
 const parsedSummary = computed(() => {
   const summary = collection.value?.details?.summary
   console.log('原始summary数据:', summary)
-  
+
   if (!summary) {
     console.log('summary为空，返回默认值')
     return t('community.noSummary')
   }
-  
+
   // 如果是纯字符串，直接返回
   if (typeof summary === 'string') {
     console.log('summary是字符串，直接返回:', summary)
     return summary
   }
-  
+
   // 如果是对象且有 summary 字段
   if (typeof summary === 'object' && summary.summary) {
     console.log('summary是对象，返回summary字段:', summary.summary)
     return summary.summary
   }
-  
+
   console.log('其他情况，转为字符串:', String(summary))
   return String(summary)
 })

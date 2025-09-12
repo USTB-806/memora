@@ -13,6 +13,7 @@ from routers.community import router as community_router
 from routers.static import mount_static_files
 from entity.response import Response
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -22,9 +23,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(
-    title="Memora API", description="Collection management API", lifespan=lifespan
-)
+app = FastAPI(title="Memora API", description="Collection management API", lifespan=lifespan)
 
 # Add CORS middleware
 app.add_middleware(

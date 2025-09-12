@@ -22,9 +22,7 @@ class AIOHTTPWebParser(WebParser):
             raise RuntimeError("Web parser not initialized. Call 'initialize' first.")
         async with self._session.get(url, timeout=timeout) as response:
             if response.status != 200:
-                raise Exception(
-                    f"Failed to fetch {url}, status code: {response.status}"
-                )
+                raise Exception(f"Failed to fetch {url}, status code: {response.status}")
             return await response.text()
             # result = await response.text()
             # # markdownit_result = await asyncio.to_thread(, result)
@@ -53,6 +51,6 @@ async def get_web_title(url: str) -> str:
         title_end = content.find("</title>")
         if title_start == -1 or title_end == -1:
             return "No title found"
-        return content[title_start + 7:title_end].strip()
+        return content[title_start + 7 : title_end].strip()
     finally:
         await aiohttp_web_parser.close()

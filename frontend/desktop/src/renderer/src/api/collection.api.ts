@@ -3,7 +3,9 @@ import type { ApiResponse } from '@/types'
 import { uploadAttachment, deleteAttachment, getAttachment } from './attachment.api'
 
 // 根据分类ID获取该分类下的所有收藏夹
-export const getCollectionsByCategoryApi = async (categoryId: string | number): Promise<ApiResponse<any>> => {
+export const getCollectionsByCategoryApi = async (
+  categoryId: string | number
+): Promise<ApiResponse<any>> => {
   return await api.get(`/api/v1/collection/by_category/${categoryId}`)
 }
 
@@ -18,7 +20,9 @@ export const getPublicCollectionDetailsApi = async (collectionId) => {
 }
 
 // 获取收藏标签
-export const getCollectionTagsApi = async (collectionId: string | number): Promise<ApiResponse<any>> => {
+export const getCollectionTagsApi = async (
+  collectionId: string | number
+): Promise<ApiResponse<any>> => {
   return await api.get(`/api/v1/collection/${collectionId}/tags`)
 }
 
@@ -47,7 +51,9 @@ export const updateCollectionDetailsApi = async (collectionId, key, value) => {
 }
 
 // 使用流式处理URL并获取进度更新
-export const processUrlWithProgressApi = async (url: string): Promise<ReadableStream<Uint8Array>> => {
+export const processUrlWithProgressApi = async (
+  url: string
+): Promise<ReadableStream<Uint8Array>> => {
   const token = localStorage.getItem('access_token')
   if (!token) {
     throw new Error('No access token found')
@@ -217,7 +223,10 @@ export const getCollectionTags = async (collectionId: string | number): Promise<
 }
 
 // 更新收藏标签 (服务层)
-export const updateCollectionTags = async (collectionId: string | number, tags: string[]): Promise<any> => {
+export const updateCollectionTags = async (
+  collectionId: string | number,
+  tags: string[]
+): Promise<any> => {
   try {
     const response = await updateCollectionTagsApi(collectionId, tags)
 
@@ -233,7 +242,11 @@ export const updateCollectionTags = async (collectionId: string | number, tags: 
 }
 
 // 更新集合的某个详情 (服务层)
-export const updateCollectionDetail = async (collectionId: string | number, key: string, value: any): Promise<any> => {
+export const updateCollectionDetail = async (
+  collectionId: string | number,
+  key: string,
+  value: any
+): Promise<any> => {
   try {
     const response = await updateCollectionDetailsApi(collectionId, key, value)
 
@@ -265,7 +278,10 @@ export const healthCheck = async (): Promise<any> => {
 }
 
 // 使用流式处理URL并获取进度更新 (服务层)
-export const processUrlWithStreaming = async (url: string, onProgress: (data: any) => void): Promise<void> => {
+export const processUrlWithStreaming = async (
+  url: string,
+  onProgress: (data: any) => void
+): Promise<void> => {
   try {
     const responseStream = await processUrlWithProgressApi(url)
     const reader = responseStream.getReader()
@@ -303,7 +319,10 @@ export const processUrlWithStreaming = async (url: string, onProgress: (data: an
 }
 
 // 基于分类获取带有附件的收藏列表 (服务层)
-export const getAttachmentCollectionsByCategory = async (categoryId: string | number, options: any = {}): Promise<any[]> => {
+export const getAttachmentCollectionsByCategory = async (
+  categoryId: string | number,
+  options: any = {}
+): Promise<any[]> => {
   const { batchSize = 10, includeAttachmentDetails = true } = options
 
   try {

@@ -57,11 +57,11 @@ export interface CreatePictureCollectionData {
 
 // Attachment Types
 export interface Attachment {
-    attachment_id: string
-    user_id: number
-    url: string
-    description: string | null
-    created_at: string
+  attachment_id: string
+  user_id: number
+  url: string
+  description: string | null
+  created_at: string
 }
 
 // Category Types

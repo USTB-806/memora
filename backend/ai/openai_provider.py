@@ -38,9 +38,9 @@ class ProviderOpenAI:
         if images:
             content = [{"type": "text", "text": prompt}]
             content.extend(
-                [{"type": "image_url", "image_url": {"url": img}} for img in images] # type: ignore
-            ) # type: ignore
-            query["content"] = content # type: ignore
+                [{"type": "image_url", "image_url": {"url": img}} for img in images]  # type: ignore
+            )  # type: ignore
+            query["content"] = content  # type: ignore
 
         query = [*context, query]
         if system_prompt:
@@ -79,9 +79,9 @@ class ProviderOpenAI:
         if images:
             content = [{"type": "text", "content": prompt}]
             content.extend(
-                [{"type": "image_url", "image_url": {"url": img}} for img in images] # type: ignore
-            ) # type: ignore
-            query["content"] = content # type: ignore
+                [{"type": "image_url", "image_url": {"url": img}} for img in images]  # type: ignore
+            )  # type: ignore
+            query["content"] = content  # type: ignore
 
         query = [*context, query]
         if system_prompt:

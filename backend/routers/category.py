@@ -56,9 +56,7 @@ async def create_category(
     user_id = current_user.id
 
     # Check if category name already exists for this user
-    stmt = select(Category).where(
-        Category.user_id == user_id, Category.name == category.name
-    )
+    stmt = select(Category).where(Category.user_id == user_id, Category.name == category.name)
     result = await db.execute(stmt)
     existing_category = result.scalar_one_or_none()
 
@@ -138,9 +136,7 @@ async def update_category(
     user_id = current_user.id
 
     # Get the existing category
-    stmt = select(Category).where(
-        Category.id == category_id, Category.user_id == user_id
-    )
+    stmt = select(Category).where(Category.id == category_id, Category.user_id == user_id)
     result = await db.execute(stmt)
     category = result.scalar_one_or_none()
 
@@ -204,9 +200,7 @@ async def delete_category(
     user_id = current_user.id
 
     # Get the existing category
-    stmt = select(Category).where(
-        Category.id == category_id, Category.user_id == user_id
-    )
+    stmt = select(Category).where(Category.id == category_id, Category.user_id == user_id)
     result = await db.execute(stmt)
     category = result.scalar_one_or_none()
 
@@ -242,21 +236,20 @@ async def create_knowledge_base(
     if not category:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Category with id {category_id} not found"
+            detail=f"Category with id {category_id} not found",
         )
-    
+
     if category.knowledge_base_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Knowledge base already exists for category {category_id}"
+            detail=f"Knowledge base already exists for category {category_id}",
         )
-    
+
     # 立即返回响应
     background_tasks.add_task(create_knowledge_base_task, category_id, current_user.id)
-    
-    return Response(
-        code=200, message="Knowledge base creation started", data=None
-    )
+
+    return Response(code=200, message="Knowledge base creation started", data=None)
+
 
 async def create_knowledge_base_task(category_id: int, user_id: int):
     """
@@ -268,19 +261,21 @@ async def create_knowledge_base_task(category_id: int, user_id: int):
             if not category:
                 logger.error(f"Category {category_id} not found during background task")
                 return
-            
+
             collection_name = f"kb_{uuid.uuid4()}"
-            
+
             # 将 ChromaDB 创建集合操作放到线程池
             await asyncio.to_thread(chroma_db_manager.create_collection, collection_name)
 
             # TODO(Soulter): 优化 SQL
-            stmt = select(CollectionDetail).join(
-                Collection, CollectionDetail.collection_id == Collection.id
-            ).where(
-                Collection.category_id == category_id,
-                Collection.user_id == user_id,
-                CollectionDetail.key == "content"
+            stmt = (
+                select(CollectionDetail)
+                .join(Collection, CollectionDetail.collection_id == Collection.id)
+                .where(
+                    Collection.category_id == category_id,
+                    Collection.user_id == user_id,
+                    CollectionDetail.key == "content",
+                )
             )
             result = await db.execute(stmt)
             details = result.scalars().all()
@@ -293,19 +288,21 @@ async def create_knowledge_base_task(category_id: int, user_id: int):
                     if isinstance(content, str) and content.strip():
                         chunked_content_list.extend(recursive_text_splitter.split_text(content))
                 return chunked_content_list
-            
+
             chunked_content_list = await asyncio.to_thread(split_texts)
 
-            logger.info(f"Creating knowledge base for category {category_id} with {len(chunked_content_list)} chunks")
+            logger.info(
+                f"Creating knowledge base for category {category_id} with {len(chunked_content_list)} chunks"
+            )
 
             # 将 ChromaDB upsert 操作放到线程池
             def upsert_documents():
                 chroma_db_manager.upsert(
                     collection_name=collection_name,
                     documents=chunked_content_list,
-                    ids=[str(uuid.uuid4()) for _ in chunked_content_list]
+                    ids=[str(uuid.uuid4()) for _ in chunked_content_list],
                 )
-            
+
             await asyncio.to_thread(upsert_documents)
 
             # Update the category with the knowledge base ID
@@ -318,6 +315,7 @@ async def create_knowledge_base_task(category_id: int, user_id: int):
         except Exception as e:
             logger.error(f"Failed to create knowledge base for category {category_id}: {e}")
             # TODO: 可以添加错误状态到数据库或通知机制
+
 
 # query knowledge base
 @router.get("/knowledge_base/{category_id}")
@@ -335,32 +333,36 @@ async def query_knowledge_base(
         category = await db.get(Category, category_id)
         if not category:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Category {category_id} not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Category {category_id} not found"
             )
-        
+
         if not category.knowledge_base_id:  # type: ignore
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Knowledge base for category {category_id} not found. Please create knowledge base first."
+                detail=f"Knowledge base for category {category_id} not found. Please create knowledge base first.",
             )
 
         collection_name = category.knowledge_base_id
 
         # Query the knowledge base (放到线程池中执行)
         results = await asyncio.to_thread(
-            chroma_db_manager.query,
-            collection_name=collection_name, 
-            query=query, 
-            n_results=5
+            chroma_db_manager.query, collection_name=collection_name, query=query, n_results=5
         )
 
-        logger.info(f"Querying knowledge base '{collection_name}' with query: {query}, found {len(results.get('documents', [[]])[0])} documents")
+        logger.info(
+            f"Querying knowledge base '{collection_name}' with query: {query}, found {len(results.get('documents', [[]])[0])} documents"
+        )
 
-        documents = results["documents"][0] if results.get("documents") and len(results["documents"]) > 0 else []
+        documents = (
+            results["documents"][0]
+            if results.get("documents") and len(results["documents"]) > 0
+            else []
+        )
 
         if not documents:
-            logger.warning(f"No documents found for query: {query} in collection: {collection_name}")
+            logger.warning(
+                f"No documents found for query: {query} in collection: {collection_name}"
+            )
             return Response(
                 code=200,
                 message="No relevant documents found",
@@ -386,9 +388,7 @@ async def query_knowledge_base(
                 },
             )
 
-        system_prompt = KNOWLEDGE_BASE_QUERY_PROMPT.format(
-            documents=documents_str
-        )
+        system_prompt = KNOWLEDGE_BASE_QUERY_PROMPT.format(documents=documents_str)
 
         # Ask AI
         ai_response = await provider_openai.text_chat(
@@ -415,7 +415,7 @@ async def query_knowledge_base(
                 "documents": documents,
             },
         )
-    
+
     except HTTPException:
         # 重新抛出 HTTP 异常
         raise
@@ -423,5 +423,5 @@ async def query_knowledge_base(
         logger.error(f"Unexpected error in query_knowledge_base: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )

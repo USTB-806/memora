@@ -100,7 +100,7 @@ const menuItems = computed(() => [
   { id: 'collections', name: t('menu.collections'), icon: Star, route: { name: 'Home' } },
   { id: 'community', name: t('menu.community'), icon: Earth, route: { name: 'Community' } },
   { id: 'profile', name: t('menu.profile'), icon: User, route: { name: 'Profile' } },
-  { id: 'settings', name: t('menu.settings'), icon: Settings, route: { name: 'Settings' } },
+  { id: 'settings', name: t('menu.settings'), icon: Settings, route: { name: 'Settings' } }
 ])
 
 const handleSidebarEnter = () => {

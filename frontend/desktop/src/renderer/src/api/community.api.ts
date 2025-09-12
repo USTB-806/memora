@@ -71,7 +71,10 @@ export const getUserPostsApi = async (page, limit) => {
 }
 
 // 创建推文 (服务层)
-export const createPost = async (referCollectionId: string | number, description: string): Promise<any> => {
+export const createPost = async (
+  referCollectionId: string | number,
+  description: string
+): Promise<any> => {
   try {
     const response = await createPostApi(referCollectionId, description)
 
@@ -139,7 +142,11 @@ export const createComment = async (postId: string | number, content: string): P
 }
 
 // 获取推文的评论列表 (服务层)
-export const getPostComments = async (postId: string | number, page: number = 1, limit: number = 20): Promise<any> => {
+export const getPostComments = async (
+  postId: string | number,
+  page: number = 1,
+  limit: number = 20
+): Promise<any> => {
   try {
     const response = await getPostCommentsApi(postId, page, limit)
 

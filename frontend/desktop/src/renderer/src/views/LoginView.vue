@@ -9,10 +9,7 @@
           {{ isLogin ? t('login.loginTitle') : t('login.registerTitle') }}
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
-          <button 
-            @click="toggleMode"
-            class="font-medium text-black hover:text-indigo-500"
-          >
+          <button @click="toggleMode" class="font-medium text-black hover:text-indigo-500">
             {{ isLogin ? t('login.noAccount') : t('login.hasAccount') }}
           </button>
         </p>
@@ -133,7 +130,7 @@ const handleSubmit = async () => {
         username: form.username,
         password: form.password
       })
-      
+
       if (response) {
         successMessage.value = t('login.loginSuccess')
         setTimeout(() => {
@@ -147,7 +144,7 @@ const handleSubmit = async () => {
         email: form.email,
         password: form.password
       })
-      
+
       if (response) {
         successMessage.value = t('login.registerSuccess')
         setTimeout(() => {

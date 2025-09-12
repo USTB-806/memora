@@ -164,7 +164,9 @@ export const getUserAvatarUrl = async (userInfo: any): Promise<string | null> =>
 }
 
 // 直接构造头像URL (服务层)
-export const buildAvatarUrl = async (avatarAttachmentId: string | number): Promise<string | null> => {
+export const buildAvatarUrl = async (
+  avatarAttachmentId: string | number
+): Promise<string | null> => {
   if (!avatarAttachmentId) {
     return null
   }

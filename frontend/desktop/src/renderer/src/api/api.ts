@@ -41,7 +41,7 @@ api.interceptors.response.use(
     if (error.response) {
       // 服务器返回了错误状态码
       const status: number = error.response.status
-      
+
       switch (status) {
         case 401:
           // 未授权，清除本地存储的 token 并跳转到登录页
@@ -61,7 +61,7 @@ api.interceptors.response.use(
         default:
           console.error(`请求错误: ${status}`)
       }
-      
+
       return Promise.reject(error.response.data || error.response)
     } else if (error.request) {
       // 网络错误

@@ -278,13 +278,13 @@ using System.Text;
 public class WindowHelper {
     [DllImport("user32.dll")]
     public static extern IntPtr GetForegroundWindow();
-    
+
     [DllImport("user32.dll")]
     public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
-    
+
     [DllImport("user32.dll")]
     public static extern int GetWindowTextLength(IntPtr hWnd);
-    
+
     [DllImport("user32.dll")]
     public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 }
@@ -294,19 +294,19 @@ try {
     $foregroundWindow = [WindowHelper]::GetForegroundWindow()
     $processId = 0
     [WindowHelper]::GetWindowThreadProcessId($foregroundWindow, [ref]$processId)
-    
+
     $process = Get-Process -Id $processId -ErrorAction SilentlyContinue
-    
+
     if ($process) {
         $processName = $process.ProcessName.ToLower()
         $browserNames = @("msedge", "chrome", "firefox", "opera", "brave", "vivaldi", "iexplore")
-        
+
         if ($processName -in $browserNames) {
             $titleLength = [WindowHelper]::GetWindowTextLength($foregroundWindow)
             if ($titleLength -gt 0) {
                 $title = New-Object System.Text.StringBuilder($titleLength + 1)
                 [WindowHelper]::GetWindowText($foregroundWindow, $title, $title.Capacity)
-                
+
                 Write-Output "SUCCESS:$processName:$($title.ToString())"
             } else {
                 Write-Output "SUCCESS:$processName:"
@@ -373,7 +373,7 @@ try {
       }
     } catch (psError) {
       console.warn('PowerShell method failed:', psError)
-      
+
       // Fallback: Check if any browser processes are running
       try {
         const { stdout } = await execAsync(
@@ -435,25 +435,25 @@ using System.Text;
 public class BrowserCapture {
     [DllImport("user32.dll")]
     public static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
-    
+
     [DllImport("user32.dll")]
     public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
-    
+
     [DllImport("user32.dll")]
     public static extern int GetWindowTextLength(IntPtr hWnd);
-    
+
     [DllImport("user32.dll")]
     public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
-    
+
     [DllImport("user32.dll")]
     public static extern bool IsWindowVisible(IntPtr hWnd);
-    
+
     [DllImport("user32.dll")]
     public static extern bool SetForegroundWindow(IntPtr hWnd);
-    
+
     [DllImport("user32.dll")]
     public static extern IntPtr GetForegroundWindow();
-    
+
     public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 }
 '@
@@ -468,18 +468,18 @@ $currentForegroundWindow = [BrowserCapture]::GetForegroundWindow()
 # Callback function for EnumWindows
 $enumCallback = {
     param($hWnd, $lParam)
-    
+
     if ([BrowserCapture]::IsWindowVisible($hWnd)) {
         $processId = 0
         [BrowserCapture]::GetWindowThreadProcessId($hWnd, [ref]$processId)
-        
+
         $process = Get-Process -Id $processId -ErrorAction SilentlyContinue
         if ($process -and $process.ProcessName.ToLower() -in $browserProcesses) {
             $titleLength = [BrowserCapture]::GetWindowTextLength($hWnd)
             if ($titleLength -gt 0) {
                 $title = New-Object System.Text.StringBuilder($titleLength + 1)
                 [BrowserCapture]::GetWindowText($hWnd, $title, $title.Capacity)
-                
+
                 $windowInfo = @{
                     Handle = $hWnd
                     Title = $title.ToString()
@@ -500,15 +500,15 @@ try {
         Write-Output "ERROR:No browser processes running"
         exit
     }
-    
+
     # Enumerate all browser windows
     [BrowserCapture]::EnumWindows($enumCallback, [IntPtr]::Zero)
-    
+
     if ($browserWindows.Count -eq 0) {
         Write-Output "ERROR:No browser windows found"
         exit
     }
-    
+
     # Find the best browser window (prefer foreground or first visible)
     $targetWindow = $null
     foreach ($window in $browserWindows) {
@@ -517,33 +517,33 @@ try {
             break
         }
     }
-    
+
     if (-not $targetWindow) {
         # Use the first browser window if no foreground match
         $targetWindow = $browserWindows[0]
     }
-    
+
     Write-Host "Found browser window: $($targetWindow.ProcessName) - $($targetWindow.Title)" -ForegroundColor Green
-    
+
     # Bring the target window to foreground
     [BrowserCapture]::SetForegroundWindow($targetWindow.Handle)
     Start-Sleep -Milliseconds 500
-    
+
     # Backup clipboard
     $originalClipboard = ""
     try {
         $originalClipboard = Get-Clipboard -ErrorAction SilentlyContinue
     } catch {}
-    
+
     # Clear clipboard
     try {
         Set-Clipboard -Value "" -ErrorAction SilentlyContinue
     } catch {}
     Start-Sleep -Milliseconds 200
-    
+
     # Send keys to copy URL
     Add-Type -AssemblyName System.Windows.Forms
-    
+
     # Different key combinations for different browsers
     switch ($targetWindow.ProcessName) {
         "firefox" {
@@ -561,30 +561,30 @@ try {
             Start-Sleep -Milliseconds 500
         }
     }
-    
+
     # Get URL from clipboard
     $capturedUrl = ""
     try {
         $capturedUrl = Get-Clipboard -ErrorAction SilentlyContinue
     } catch {}
-    
+
     # Restore clipboard
     try {
         if ($originalClipboard) {
             Set-Clipboard -Value $originalClipboard -ErrorAction SilentlyContinue
         }
     } catch {}
-    
+
     # Restore original foreground window
     [BrowserCapture]::SetForegroundWindow($currentForegroundWindow)
-    
+
     # Output result
     if ($capturedUrl -and ($capturedUrl.StartsWith("http://") -or $capturedUrl.StartsWith("https://"))) {
         Write-Output $capturedUrl.Trim()
     } else {
         Write-Output "ERROR:No valid URL captured from $($targetWindow.ProcessName) - got: $capturedUrl"
     }
-    
+
 } catch {
     Write-Output "ERROR:Script execution failed - $($_.Exception.Message)"
 }

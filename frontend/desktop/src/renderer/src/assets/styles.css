@@ -51,7 +51,8 @@ body {
 
 /* 添加系统主题css变量 */
 @theme {
-  --color-primary: 
+  --color-primary:  
+;
 }
 
 /* 心情滑块样式 */

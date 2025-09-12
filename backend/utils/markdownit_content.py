@@ -12,4 +12,5 @@ class MarkdownitContent:
 
         return result.text_content
 
+
 markdownit_helper = MarkdownitContent()

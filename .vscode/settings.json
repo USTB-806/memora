@@ -1,7 +1,23 @@
 {
+    "black-formatter.args": ["-l", "100"],
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "[vue]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.formatOnSave": false
+    },
+    "[jsonc]": {
+        "editor.formatOnSave": false
+    },
+    "[yaml]": {
+        "editor.formatOnSave": false
+    },
+    "python.analysis.typeCheckingMode": "basic",
     "python-envs.pythonProjects": [],
-    "i18n-ally.localesPaths": [
-        "frontend/desktop/src/renderer/src/locales",
-        "../../../codes/memora/frontend/desktop/src/renderer/src/locales"
-    ]
+    "i18n-ally.localesPaths": ["frontend/desktop/src/renderer/src/locales"]
 }

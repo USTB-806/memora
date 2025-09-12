@@ -10,7 +10,7 @@
           :style="{
             left: Math.random() * 100 + '%',
             animationDelay: Math.random() * 10 + 's',
-            animationDuration: (8 + Math.random() * 4) + 's'
+            animationDuration: 8 + Math.random() * 4 + 's'
           }"
         ></div>
       </div>
@@ -38,9 +38,7 @@
               @change="changeLanguage"
               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
             />
-            <label for="en" class="ml-3 block text-sm font-medium text-gray-700">
-              English
-            </label>
+            <label for="en" class="ml-3 block text-sm font-medium text-gray-700"> English </label>
           </div>
           <div class="flex items-center">
             <input
@@ -51,9 +49,7 @@
               @change="changeLanguage"
               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
             />
-            <label for="zh" class="ml-3 block text-sm font-medium text-gray-700">
-              中文
-            </label>
+            <label for="zh" class="ml-3 block text-sm font-medium text-gray-700"> 中文 </label>
           </div>
         </div>
       </div>
