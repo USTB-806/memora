@@ -35,8 +35,8 @@ class CategoryUpdate(BaseModel):
 
 
 class CategoryResponse(BaseModel):
-    id: int
-    user_id: int
+    id: str
+    user_id: str
     name: str
     emoji: Optional[str] = None
 
@@ -125,7 +125,7 @@ async def get_categories(
 
 @router.put("/{category_id}", response_model=Response)
 async def update_category(
-    category_id: int,
+    category_id: str,
     category_update: CategoryUpdate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -190,7 +190,7 @@ async def update_category(
 
 @router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
-    category_id: int,
+    category_id: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -225,7 +225,7 @@ async def delete_category(
 @router.post("/create_knowledge_base")
 async def create_knowledge_base(
     background_tasks: BackgroundTasks,
-    category_id: int,
+    category_id: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -251,7 +251,7 @@ async def create_knowledge_base(
     return Response(code=200, message="Knowledge base creation started", data=None)
 
 
-async def create_knowledge_base_task(category_id: int, user_id: int):
+async def create_knowledge_base_task(category_id: str, user_id: str):
     """
     Background task to create knowledge base
     """
@@ -320,7 +320,7 @@ async def create_knowledge_base_task(category_id: int, user_id: int):
 # query knowledge base
 @router.get("/knowledge_base/{category_id}")
 async def query_knowledge_base(
-    category_id: int,
+    category_id: str,
     query: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

@@ -321,7 +321,20 @@ const contentMarkdown = computed(() => {
     console.log('content为空，返回空字符串')
     return ''
   }
-  const result = marked.parse(content)
+  
+  // 配置marked禁用HTML标签渲染，提高安全性
+  const renderer = new marked.Renderer()
+  
+  // 禁用HTML标签
+  renderer.html = (html) => {
+    return html.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  }
+  
+  const result = marked(content, { 
+    renderer,
+    breaks: true,
+    gfm: true
+  })
   console.log('Markdown渲染结果长度:', result.length)
   return result
 })

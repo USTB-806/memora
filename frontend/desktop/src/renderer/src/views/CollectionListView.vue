@@ -5,7 +5,7 @@
       <div class="max-w-6xl mx-auto px-6 py-5">
         <div class="flex justify-between items-start mb-2">
           <button
-            class="px-2 py-1 bgconst createKnowledgeBase = async () => { if (!categoryId || creatingKnowledgeBase.value) return try { creatingKnowledgeBase.value = true const result = await apiCreateKnowledgeBase(categoryId) if (result.code === ) { // 知识库创建已启动，后台处理 alert('知识库创建已启动，请稍后刷新页面查看状态。') // 由于是后台任务，不立即重新获取数据 } } catch (error) { console.error('创建知识库失败:', error) alert('创建知识库失败: ' + (error.detail || error.message || '未知错误')) } finally { creatingKnowledgeBase.value = false } }-gray-200 rounded text-primary-text font-medium flex items-center gap-2"
+            class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-primary-text font-medium flex items-center gap-2"
             style="font-size: 12px"
             @click="$router.back()"
           >
@@ -364,10 +364,13 @@ const SearchIcon = {
 // 解码HTML实体
 const decodeHtmlEntities = (text) => {
   if (!text) return ''
-  const parser = new DOMParser()
-  const decodedString = parser.parseFromString(`<!doctype html><body>${text}</body>`, 'text/html')
-    .body.textContent
-  return decodedString
+  if (typeof text !== 'string') {
+    return text
+  }
+  
+  const textarea = document.createElement('textarea')
+  textarea.innerHTML = text
+  return textarea.value
 }
 
 // 路由参数
@@ -599,7 +602,21 @@ const clearSearch = () => {
 
 // 计算属性：渲染AI响应的Markdown
 const renderedAiResponse = computed(() => {
-  return aiResponse.value ? marked(aiResponse.value) : ''
+  if (!aiResponse.value) return ''
+  
+  // 配置marked禁用HTML标签渲染，提高安全性
+  const renderer = new marked.Renderer()
+  
+  // 禁用HTML标签
+  renderer.html = (html) => {
+    return html.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  }
+  
+  return marked(aiResponse.value, { 
+    renderer,
+    breaks: true,
+    gfm: true
+  })
 })
 </script>
 

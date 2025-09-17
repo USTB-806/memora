@@ -117,7 +117,7 @@ const handlePublish = async () => {
   try {
     loading.value = true
 
-    const result = await createPost(parseInt(props.collectionId), description.value.trim() || null)
+    const result = await createPost(props.collectionId, description.value.trim() || null)
 
     if (result) {
       emit('success', result)

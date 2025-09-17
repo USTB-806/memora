@@ -61,8 +61,8 @@ export interface CreatePictureCollectionData {
 
 // Attachment Types
 export interface Attachment {
-  attachment_id: string
-  user_id: number
+  id: string
+  user_id: string
   url: string
   description: string | null
   created_at: string

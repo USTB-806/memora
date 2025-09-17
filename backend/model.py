@@ -9,6 +9,7 @@ from sqlalchemy import (
     Text,
     Boolean,
     Enum,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
@@ -25,12 +26,12 @@ class AssetType(enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(255), unique=True, nullable=False)
-    email = Column(String(255), unique=True, nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    username = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False)
     password_hash = Column(String(255), nullable=False)
     avatar_attachment_id = Column(
-        String(36), ForeignKey("attachments.attachment_id"), nullable=True
+        String(36), ForeignKey("attachments.id"), nullable=True
     )
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
@@ -38,6 +39,12 @@ class User(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
+    )
+
+    # Unique constraints
+    __table_args__ = (
+        UniqueConstraint('username', name='uq_users_username'),
+        UniqueConstraint('email', name='uq_users_email'),
     )
 
     # Relationship to collections
@@ -55,11 +62,16 @@ class User(Base):
 class Category(Base):
     __tablename__ = "categories"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     name = Column(String(50), nullable=False)
     emoji = Column(String(10), nullable=True)  # Optional emoji for category
     knowledge_base_id = Column(String(36), nullable=True)  # Optional knowledge base ID
+
+    # Unique constraints
+    __table_args__ = (
+        UniqueConstraint('user_id', 'name', name='uq_categories_user_name'),
+    )
 
     def __repr__(self):
         return f"<Category(id={self.id}, name='{self.name}')>"
@@ -68,9 +80,9 @@ class Category(Base):
 class Collection(Base):
     __tablename__ = "collections"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+    category_id = Column(String(36), ForeignKey("categories.id"), nullable=True)
     tags = Column(String(255), nullable=True)  # splited by comma
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
@@ -96,8 +108,8 @@ class Collection(Base):
 class CollectionDetail(Base):
     __tablename__ = "collection_details"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    collection_id = Column(Integer, ForeignKey("collections.id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    collection_id = Column(String(36), ForeignKey("collections.id"), nullable=False)
     key = Column(String(255), nullable=False)
     value = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -106,6 +118,11 @@ class CollectionDetail(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
+    )
+
+    # Unique constraints
+    __table_args__ = (
+        UniqueConstraint('collection_id', 'key', name='uq_collection_details_collection_key'),
     )
 
     collection = relationship("Collection", back_populates="details")
@@ -117,25 +134,27 @@ class CollectionDetail(Base):
 class Attachment(Base):
     __tablename__ = "attachments"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    attachment_id = Column(
-        String(36), default=lambda: str(uuid.uuid4()), unique=True, nullable=False
-    )
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     url = Column(String(500), nullable=False)
     description = Column(Text, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     def __repr__(self):
-        return f"<Attachment(attachment_id={self.attachment_id}, url='{self.url}')>"
+        return f"<Attachment(id={self.id}, url='{self.url}')>"
 
 
 class CollectionAttachment(Base):
     __tablename__ = "collection_attachments"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    collection_id = Column(Integer, ForeignKey("collections.id"), nullable=False)
-    attachment_id = Column(String(36), ForeignKey("attachments.attachment_id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    collection_id = Column(String(36), ForeignKey("collections.id"), nullable=False)
+    attachment_id = Column(String(36), ForeignKey("attachments.id"), nullable=False)
+
+    # Unique constraints
+    __table_args__ = (
+        UniqueConstraint('collection_id', 'attachment_id', name='uq_collection_attachments_collection_attachment'),
+    )
 
     def __repr__(self):
         return f"<CollectionAttachment(attachment_id={self.id}, collection_id={self.collection_id}, attachment_id={self.attachment_id})>"
@@ -147,10 +166,9 @@ class CollectionAttachment(Base):
 class Post(Base):
     __tablename__ = "posts"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    post_id = Column(String(36), default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    refer_collection_id = Column(Integer, ForeignKey("collections.id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+    refer_collection_id = Column(String(36), ForeignKey("collections.id"), nullable=False)
     description = Column(Text, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
@@ -178,9 +196,9 @@ class Post(Base):
 class Comment(Base):
     __tablename__ = "comments"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    post_id = Column(String(36), ForeignKey("posts.id"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
@@ -207,11 +225,16 @@ class Comment(Base):
 class Like(Base):
     __tablename__ = "likes"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    asset_id = Column(Integer, nullable=False)  # post_id 或 comment_id
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+    asset_id = Column(String(36), nullable=False)  # post_id 或 comment_id
     asset_type = Column(Enum(AssetType), nullable=False)  # 'post' 或 'comment'
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    # Unique constraints
+    __table_args__ = (
+        UniqueConstraint('user_id', 'asset_id', 'asset_type', name='uq_likes_user_asset'),
+    )
 
     # Relationships
     user = relationship("User", back_populates="likes")

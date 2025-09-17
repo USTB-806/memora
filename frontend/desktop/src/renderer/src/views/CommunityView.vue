@@ -175,8 +175,8 @@
                   class="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
                 >
                   <img
-                    v-if="currentUser && currentUser.avatar_attachment_id"
-                    :src="buildAvatarUrl(currentUser.avatar_attachment_id)"
+                    v-if="currentUser && currentUser.avatar_url"
+                    :src="currentUser.avatar_url"
                     :alt="t('community.myAvatar')"
                     class="w-full h-full object-cover"
                   />

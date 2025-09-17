@@ -30,13 +30,13 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"}
 
 # Pydantic models
 class AttachmentCreate(BaseModel):
-    user_id: int
+    user_id: str
     description: Optional[str] = None
 
 
 class AttachmentResponse(BaseModel):
-    attachment_id: str
-    user_id: int
+    id: str
+    user_id: str
     url: str
     description: Optional[str]
     created_at: datetime
@@ -72,7 +72,8 @@ def save_file(file: UploadFile) -> str:
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    return str(file_path)
+    # Return relative URL path that can be accessed via API
+    return f"/api/v1/attachments/file/{unique_filename}"
 
 
 # Upload attachment endpoint
@@ -128,7 +129,7 @@ async def get_attachment(
     Get a specific attachment by ID (only if owned by current user)
     """
     attachment_query = select(Attachment).where(
-        Attachment.attachment_id == attachment_id, Attachment.user_id == current_user.id
+        Attachment.id == attachment_id, Attachment.user_id == current_user.id
     )
     attachment_result = await db.execute(attachment_query)
     attachment = attachment_result.scalar_one_or_none()
@@ -145,7 +146,7 @@ async def get_attachment_file(attachment_id: str, db: AsyncSession = Depends(get
     """
     Get the file of a specific attachment by ID
     """
-    attachment_query = select(Attachment).where(Attachment.attachment_id == attachment_id)
+    attachment_query = select(Attachment).where(Attachment.id == attachment_id)
     attachment_result = await db.execute(attachment_query)
     attachment = attachment_result.scalar_one_or_none()
 
@@ -162,6 +163,53 @@ async def get_attachment_file(attachment_id: str, db: AsyncSession = Depends(get
     return FileResponse(file_path, media_type="application/octet-stream", filename=file_path.name)
 
 
+@router.get("/file/{attachment_id}")
+async def get_attachment_file_by_id(
+    attachment_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get the file of a specific attachment by ID
+    """
+    # Get attachment info from database
+    attachment_query = select(Attachment).where(
+        Attachment.id == attachment_id, Attachment.user_id == current_user.id
+    )
+    attachment_result = await db.execute(attachment_query)
+    attachment = attachment_result.scalar_one_or_none()
+
+    if not attachment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Attachment with id {attachment_id} not found or access denied",
+        )
+
+    # Extract filename from the URL stored in database
+    # The URL format is /api/v1/attachments/file/{filename}
+    url_parts = attachment.url.split('/')
+    filename = url_parts[-1]  # Get the last part which should be the filename
+
+    file_path = UPLOAD_DIR / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+
+    # Determine media type based on file extension
+    media_type = "application/octet-stream"
+    if filename.lower().endswith(('.jpg', '.jpeg')):
+        media_type = "image/jpeg"
+    elif filename.lower().endswith('.png'):
+        media_type = "image/png"
+    elif filename.lower().endswith('.gif'):
+        media_type = "image/gif"
+    elif filename.lower().endswith('.webp'):
+        media_type = "image/webp"
+    elif filename.lower().endswith('.bmp'):
+        media_type = "image/bmp"
+
+    return FileResponse(file_path, media_type=media_type)
+
+
 # Delete attachment
 @router.delete("/{attachment_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_attachment(
@@ -173,7 +221,7 @@ async def delete_attachment(
     Delete an attachment by ID (only if owned by current user)
     """
     attachment_query = select(Attachment).where(
-        Attachment.attachment_id == attachment_id, Attachment.user_id == current_user.id
+        Attachment.id == attachment_id, Attachment.user_id == current_user.id
     )
     attachment_result = await db.execute(attachment_query)
     attachment = attachment_result.scalar_one_or_none()

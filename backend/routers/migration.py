@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, insert, update
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from entity.response import Response
 from loguru import logger
+from datetime import datetime, timezone
 
 from model import (
     User,
@@ -108,6 +110,8 @@ async def export_data(
                     "name": category.name,
                     "description": "",  # Category model doesn't have description
                     "user_id": category.user_id,
+                    "emoji": category.emoji,
+                    "knowledge_base_id": category.knowledge_base_id,
                     "created_at": None,  # Category model doesn't have timestamps
                     "updated_at": None,
                 }
@@ -120,6 +124,7 @@ async def export_data(
                     "description": "",  # Collection model doesn't have description
                     "category_id": collection.category_id,
                     "user_id": collection.user_id,
+                    "tags": collection.tags,
                     "is_public": False,  # Collection model doesn't have is_public, default to False
                     "created_at": collection.created_at.isoformat() if collection.created_at else None,
                     "updated_at": collection.updated_at.isoformat() if collection.updated_at else None,
@@ -140,7 +145,6 @@ async def export_data(
             "posts": [
                 {
                     "id": post.id,
-                    "post_id": post.post_id,
                     "title": "",  # Post model doesn't have title, use empty string
                     "content": post.description or "",  # Use description as content
                     "summary": "",  # Post model doesn't have summary
@@ -166,7 +170,7 @@ async def export_data(
             "attachments": [
                 {
                     "id": attachment.id,
-                    "filename": attachment.attachment_id,  # Use attachment_id as filename
+                    "filename": attachment.description or "",  # Use description as filename
                     "file_path": attachment.url,  # Use url as file_path
                     "file_size": 0,  # Attachment model doesn't have file_size, use 0
                     "mime_type": "",  # Attachment model doesn't have mime_type, use empty string
@@ -199,4 +203,169 @@ async def export_data(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to export data: {str(e)}"
+        )
+
+
+@router.post("/import", response_model=Response)
+async def import_data(
+    import_data: dict,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Import data for migration purposes.
+    Uses upsert logic to avoid duplicates.
+    """
+    try:
+        logger.info(f"Importing data for user {current_user.id}")
+
+        # Import users (only current user)
+        if "users" in import_data:
+            for user_data in import_data["users"]:
+                if user_data["id"] == current_user.id:
+                    # Update current user if needed
+                    await db.execute(
+                        update(User).where(User.id == user_data["id"]).values(
+                            username=user_data["username"],
+                            email=user_data["email"],
+                            updated_at=datetime.now(timezone.utc)
+                        )
+                    )
+
+        # Import categories
+        if "categories" in import_data:
+            for category_data in import_data["categories"]:
+                stmt = sqlite_insert(Category).values(
+                    id=category_data["id"],
+                    user_id=category_data["user_id"],
+                    name=category_data["name"],
+                    emoji=category_data.get("emoji"),
+                    knowledge_base_id=category_data.get("knowledge_base_id")
+                ).on_conflict_do_update(
+                    index_elements=['id'],
+                    set_={
+                        'name': category_data["name"],
+                        'emoji': category_data.get("emoji"),
+                        'knowledge_base_id': category_data.get("knowledge_base_id")
+                    }
+                )
+                await db.execute(stmt)
+
+        # Import collections
+        if "collections" in import_data:
+            for collection_data in import_data["collections"]:
+                stmt = sqlite_insert(Collection).values(
+                    id=collection_data["id"],
+                    user_id=collection_data["user_id"],
+                    category_id=collection_data.get("category_id"),
+                    tags=collection_data.get("tags"),
+                    created_at=collection_data.get("created_at"),
+                    updated_at=collection_data.get("updated_at")
+                ).on_conflict_do_update(
+                    index_elements=['id'],
+                    set_={
+                        'category_id': collection_data.get("category_id"),
+                        'tags': collection_data.get("tags"),
+                        'updated_at': datetime.now(timezone.utc)
+                    }
+                )
+                await db.execute(stmt)
+
+        # Import collection details
+        if "collection_details" in import_data:
+            for detail_data in import_data["collection_details"]:
+                stmt = sqlite_insert(CollectionDetail).values(
+                    id=detail_data["id"],
+                    collection_id=detail_data["collection_id"],
+                    key=detail_data["key"],
+                    value=detail_data["value"],
+                    created_at=detail_data.get("created_at"),
+                    updated_at=detail_data.get("updated_at")
+                ).on_conflict_do_update(
+                    index_elements=['id'],
+                    set_={
+                        'value': detail_data["value"],
+                        'updated_at': datetime.now(timezone.utc)
+                    }
+                )
+                await db.execute(stmt)
+
+        # Import attachments
+        if "attachments" in import_data:
+            for attachment_data in import_data["attachments"]:
+                stmt = sqlite_insert(Attachment).values(
+                    id=attachment_data["id"],
+                    user_id=attachment_data["user_id"],
+                    url=attachment_data["file_path"],  # Use file_path as url
+                    description=attachment_data.get("filename", ""),
+                    created_at=attachment_data.get("created_at")
+                ).on_conflict_do_update(
+                    index_elements=['id'],
+                    set_={
+                        'url': attachment_data["file_path"],
+                        'description': attachment_data.get("filename", "")
+                    }
+                )
+                await db.execute(stmt)
+
+        # Import posts
+        if "posts" in import_data:
+            for post_data in import_data["posts"]:
+                stmt = sqlite_insert(Post).values(
+                    id=post_data["id"],
+                    user_id=post_data["user_id"],
+                    refer_collection_id=post_data["collection_id"],
+                    description=post_data.get("content", ""),
+                    created_at=post_data.get("created_at"),
+                    updated_at=post_data.get("updated_at")
+                ).on_conflict_do_update(
+                    index_elements=['id'],
+                    set_={
+                        'description': post_data.get("content", ""),
+                        'updated_at': datetime.now(timezone.utc)
+                    }
+                )
+                await db.execute(stmt)
+
+        # Import comments
+        if "comments" in import_data:
+            for comment_data in import_data["comments"]:
+                stmt = sqlite_insert(Comment).values(
+                    id=comment_data["id"],
+                    post_id=comment_data["post_id"],
+                    user_id=comment_data["user_id"],
+                    content=comment_data["content"],
+                    created_at=comment_data.get("created_at"),
+                    updated_at=comment_data.get("updated_at")
+                ).on_conflict_do_update(
+                    index_elements=['id'],
+                    set_={
+                        'content': comment_data["content"],
+                        'updated_at': datetime.now(timezone.utc)
+                    }
+                )
+                await db.execute(stmt)
+
+        # Import likes
+        if "likes" in import_data:
+            for like_data in import_data["likes"]:
+                stmt = sqlite_insert(Like).values(
+                    id=like_data["id"],
+                    user_id=like_data["user_id"],
+                    asset_id=like_data["asset_id"],
+                    asset_type=like_data["asset_type"],
+                    created_at=like_data.get("created_at")
+                ).on_conflict_do_nothing()  # Likes are unique, don't update
+                await db.execute(stmt)
+
+        await db.commit()
+        logger.info(f"Successfully imported data for user {current_user.id}")
+        return Response(data={"message": "Data imported successfully"})
+
+    except Exception as e:
+        await db.rollback()
+        logger.error(f"Failed to import data for user {current_user.id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to import data: {str(e)}"
         )

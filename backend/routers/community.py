@@ -29,7 +29,7 @@ router = APIRouter(
 
 # Request/Response Models
 class CreatePostRequest(BaseModel):
-    refer_collection_id: int
+    refer_collection_id: str
     description: Optional[str] = None
 
 
@@ -38,20 +38,20 @@ class CreateCommentRequest(BaseModel):
 
 
 class LikeRequest(BaseModel):
-    asset_id: int
+    asset_id: str
     asset_type: str  # 'post' or 'comment'
 
 
 class UserInfo(BaseModel):
-    id: int
+    id: str
     username: str
     avatar_attachment_id: Optional[str] = None
 
 
 class CommentResponse(BaseModel):
-    id: int
+    id: str
     content: str
-    user_id: int
+    user_id: str
     username: str
     avatar_attachment_id: Optional[str] = None
     likes_count: int
@@ -62,15 +62,15 @@ class CommentResponse(BaseModel):
 
 
 class PostResponse(BaseModel):
-    id: int
+    id: str
     post_id: str  # UUID
     description: Optional[str]
-    user_id: int
+    user_id: str
     username: str
     avatar_attachment_id: Optional[str] = None
-    refer_collection_id: int
+    refer_collection_id: str
     collection_details: dict
-    category_id: Optional[int]
+    category_id: Optional[str]
     category_name: Optional[str]
     tags: Optional[str]
     likes_count: int
@@ -115,7 +115,7 @@ async def create_post(
         code=200,
         message="推文发布成功",
         data={
-            "post_id": new_post.post_id,
+            "post_id": new_post.id,
             "refer_collection_id": new_post.refer_collection_id,
             "description": new_post.description,
         },
@@ -131,7 +131,7 @@ async def delete_post(
     """
     删除推文（只能删除自己的推文）
     """
-    post_query = select(Post).where(Post.post_id == post_id, Post.user_id == current_user.id)
+    post_query = select(Post).where(Post.id == post_id, Post.user_id == current_user.id)
     post_result = await db.execute(post_query)
     post = post_result.scalar_one_or_none()
 
@@ -212,7 +212,7 @@ async def get_posts(
         posts.append(
             PostResponse(
                 id=post.id,
-                post_id=post.post_id,
+                post_id=post.id,
                 description=post.description,
                 user_id=post.user_id,
                 username=user.username,
@@ -308,7 +308,7 @@ async def get_my_posts(
         posts.append(
             PostResponse(
                 id=post.id,
-                post_id=post.post_id,
+                post_id=post.id,
                 description=post.description,
                 user_id=post.user_id,
                 username=user.username,
@@ -438,7 +438,7 @@ async def unlike_asset(
     )
 
 
-@router.post("/posts/{post_id}/comment", response_model=Response)
+@router.post("/posts/{post_id}/comments", response_model=Response)
 async def create_comment(
     post_id: str,  # 使用UUID字符串
     request: CreateCommentRequest,
@@ -449,7 +449,7 @@ async def create_comment(
     为推文添加评论
     """
     # 检查推文是否存在
-    post_query = select(Post).where(Post.post_id == post_id)
+    post_query = select(Post).where(Post.id == post_id)
     post_result = await db.execute(post_query)
     post = post_result.scalar_one_or_none()
 
@@ -500,7 +500,7 @@ async def get_post_comments(
     获取推文的评论列表
     """
     # 检查推文是否存在
-    post_query = select(Post).where(Post.post_id == post_id)
+    post_query = select(Post).where(Post.id == post_id)
     post_result = await db.execute(post_query)
     post = post_result.scalar_one_or_none()
 
@@ -568,7 +568,7 @@ async def get_post_comments(
 
 @router.delete("/comments/{comment_id}", response_model=Response)
 async def delete_comment(
-    comment_id: int,
+    comment_id: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -600,7 +600,7 @@ async def get_post_collection_details(
     获取推文关联的收藏详情（公共接口，无需登录）
     """
     # 检查推文是否存在
-    post_query = select(Post).where(Post.post_id == post_id)
+    post_query = select(Post).where(Post.id == post_id)
     post_result = await db.execute(post_query)
     post = post_result.scalar_one_or_none()
 

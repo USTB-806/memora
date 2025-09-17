@@ -1306,7 +1306,7 @@ app.whenReady().then(() => {
     console.log('Performing test database operations...')
     try {
       // 尝试获取不存在的用户，这会创建数据库表
-      localDb.getUserById(1)
+      localDb.getUserById('1')
     } catch (userError) {
       console.log('Expected: User 1 does not exist yet')
     }

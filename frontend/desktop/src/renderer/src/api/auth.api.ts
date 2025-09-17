@@ -1,6 +1,6 @@
 import api from './api'
 import type { ApiResponse } from '@/types'
-import { uploadAttachmentApi, getAttachmentApi } from './attachment.api'
+import { uploadAttachmentApi } from './attachment.api'
 import { baseURL } from './api'
 
 // 用户注册
@@ -124,7 +124,7 @@ export const uploadUserAvatar = async (file: File): Promise<any> => {
 
     // 更新用户头像信息
     const updateData = {
-      avatar_attachment_id: attachment.attachment_id
+      avatar_attachment_id: attachment.id
     }
 
     const response = await updateUserProfileApi(updateData)
@@ -147,15 +147,8 @@ export const getUserAvatarUrl = async (userInfo: any): Promise<string | null> =>
   }
 
   try {
-    const response = await getAttachmentApi(userInfo.avatar_attachment_id)
-
-    if (response.code !== 200) {
-      throw new Error(response.message || '获取头像URL失败')
-    }
-
-    const attachment = response.data
-    // Concatenate base URL with the relative path from attachment.url for absolute URL
-    return `${baseURL}/${attachment.url.replace(/\\/g, '/')}`
+    // Directly construct the URL using attachment ID
+    return `${baseURL}/api/v1/attachments/file/${userInfo.avatar_attachment_id}`
   } catch (error) {
     console.error('获取头像URL失败:', error)
     return null
@@ -170,15 +163,8 @@ export const buildAvatarUrl = async (
     return null
   }
   try {
-    const response = await getAttachmentApi(avatarAttachmentId)
-
-    if (response.code !== 200) {
-      throw new Error(response.message || '获取头像URL失败')
-    }
-
-    const attachment = response.data
-    // Concatenate base URL with the relative path from attachment.url for absolute URL
-    return `${baseURL}/${attachment.url.replace(/\\/g, '/')}`
+    // Directly construct the URL using attachment ID
+    return `${baseURL}/api/v1/attachments/file/${avatarAttachmentId}`
   } catch (error) {
     console.error('构建头像URL失败:', error)
     return null

@@ -37,7 +37,7 @@ class UserLogin(BaseModel):
 class UserProfile(BaseModel):
     """用户个人信息模型"""
 
-    id: int
+    id: str
     username: str
     email: str
     avatar_attachment_id: Optional[str] = None

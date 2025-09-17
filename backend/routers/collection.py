@@ -263,7 +263,7 @@ async def create_collection_url(
 
 #     # find the attachment by id
 #     attachment_query = select(Attachment).where(
-#         Attachment.attachment_id == event.attachment_id
+#         Attachment.id == event.attachment_id
 #     )
 #     attachment_result = await db.execute(attachment_query)
 #     attachment = attachment_result.scalar_one_or_none()
@@ -302,14 +302,14 @@ async def create_collection_url(
 #     # update collection_attachaments table
 #     collection_attachment = CollectionAttachment(
 #         collection_id=db_collection.id,
-#         attachment_id=attachment.attachment_id,  # type: ignore
+#         attachment_id=attachment.id,  # type: ignore
 #     )
 #     db.add(collection_attachment)
 #     await db.commit()
 
 #     # update collection details
 #     detail = CollectionDetail(
-#         collection_id=db_collection.id, key="attachment", value=attachment.attachment_id
+#         collection_id=db_collection.id, key="attachment", value=attachment.id
 #     )
 #     db.add(detail)
 #     await db.commit()
@@ -336,7 +336,7 @@ collections_router = APIRouter(
 
 @collections_router.get("/", response_model=Response)
 async def get_current_user_collections(
-    category_id: int | None = None,
+    category_id: str | None = None,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -383,7 +383,7 @@ async def get_current_user_collections(
 # 通过category_id获取所有collection
 @router.get("/by_category/{category_id}", response_model=Response)
 async def get_collections_by_category(
-    category_id: int,
+    category_id: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -479,7 +479,7 @@ async def search_collections(query: str, db: AsyncSession = Depends(get_db)):
 # 详情相关路由
 @router.get("/{collection_id}/details", response_model=Response)
 async def get_collection_details(
-    collection_id: int,
+    collection_id: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -523,7 +523,7 @@ async def get_collection_details(
 
 @router.get("/{collection_id}/details/{key}", response_model=Response)
 async def get_collection_detail(
-    collection_id: int,
+    collection_id: str,
     key: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -608,7 +608,7 @@ async def update_collection_detail(
 
 @router.delete("/{collection_id}/details/{key}", response_model=Response)
 async def delete_collection_detail(
-    collection_id: int,
+    collection_id: str,
     key: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -640,7 +640,7 @@ async def delete_collection_detail(
 
 @router.get("/{collection_id}/tags", response_model=Response)
 async def get_collection_tags(
-    collection_id: int,
+    collection_id: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -659,7 +659,7 @@ async def get_collection_tags(
 
 
 @router.get("/public/{collection_id}/details", response_model=Response)
-async def get_public_collection_details(collection_id: int, db: AsyncSession = Depends(get_db)):
+async def get_public_collection_details(collection_id: str, db: AsyncSession = Depends(get_db)):
 
     """
     获取收藏详情（公共接口，无需登录）
@@ -721,7 +721,7 @@ async def get_public_collection_details(collection_id: int, db: AsyncSession = D
 
 @router.put("/{collection_id}/tags", response_model=Response)
 async def update_collection_tags(
-    collection_id: int,
+    collection_id: str,
     update: CollectionTagsUpdate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -750,7 +750,7 @@ async def update_collection_tags(
 
 @router.delete("/{collection_id}", response_model=Response)
 async def delete_collection(
-    collection_id: int,
+    collection_id: str,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
