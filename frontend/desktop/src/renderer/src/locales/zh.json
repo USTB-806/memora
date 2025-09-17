@@ -137,6 +137,55 @@
   "settings": {
     "title": "设置",
     "language": "语言",
-    "selectLanguage": "选择语言"
+    "selectLanguage": "选择语言",
+    "mode": {
+      "title": "应用模式",
+      "normal": "正常版",
+      "normalDesc": "连接到服务器，使用完整的云端功能",
+      "standalone": "单人版",
+      "standaloneDesc": "本地运行，完全离线，不依赖服务器"
+    },
+    "ai": {
+      "title": "AI 配置",
+      "provider": "AI 提供商",
+      "providers": {
+        "openai": "OpenAI",
+        "anthropic": "Anthropic",
+        "ollama": "Ollama",
+        "custom": "自定义"
+      },
+      "apiKey": "API Key",
+      "apiKeyPlaceholder": "输入您的 API Key",
+      "baseUrl": "Base URL",
+      "baseUrlPlaceholder": "输入自定义 API 端点",
+      "model": "模型",
+      "modelPlaceholder": "输入模型名称",
+      "testConnection": "测试连接",
+      "testing": "测试中...",
+      "success": "连接成功！",
+      "errors": {
+        "noApiKey": "请输入 API Key",
+        "testFailed": "测试失败",
+        "configFailed": "配置失败",
+        "unknown": "未知错误"
+      }
+    },
+    "migration": {
+      "title": "数据迁移",
+      "status": "迁移状态",
+      "collections": "收藏",
+      "posts": "推文",
+      "knowledge": "知识文档",
+      "includeCollections": "包含收藏",
+      "includePrivatePosts": "包含私有推文",
+      "includeKnowledgeBase": "包含知识库",
+      "toNormal": "迁移到正常版",
+      "toStandalone": "迁移到单人版",
+      "migrating": "迁移中...",
+      "success": "迁移成功",
+      "failed": "迁移失败",
+      "migratedItems": "已迁移项目",
+      "errors": "错误"
+    }
   }
 }

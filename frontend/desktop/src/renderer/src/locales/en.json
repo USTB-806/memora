@@ -137,6 +137,55 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
-    "selectLanguage": "Select Language"
+    "selectLanguage": "Select Language",
+    "mode": {
+      "title": "Application Mode",
+      "normal": "Normal Mode",
+      "normalDesc": "Connect to server, use full cloud features",
+      "standalone": "Standalone Mode",
+      "standaloneDesc": "Run locally, completely offline, no server dependency"
+    },
+    "ai": {
+      "title": "AI Configuration",
+      "provider": "AI Provider",
+      "providers": {
+        "openai": "OpenAI",
+        "anthropic": "Anthropic",
+        "ollama": "Ollama",
+        "custom": "Custom"
+      },
+      "apiKey": "API Key",
+      "apiKeyPlaceholder": "Enter your API Key",
+      "baseUrl": "Base URL",
+      "baseUrlPlaceholder": "Enter custom API endpoint",
+      "model": "Model",
+      "modelPlaceholder": "Enter model name",
+      "testConnection": "Test Connection",
+      "testing": "Testing...",
+      "success": "Connection successful!",
+      "errors": {
+        "noApiKey": "Please enter API Key",
+        "testFailed": "Test failed",
+        "configFailed": "Configuration failed",
+        "unknown": "Unknown error"
+      }
+    },
+    "migration": {
+      "title": "Data Migration",
+      "status": "Migration Status",
+      "collections": "Collections",
+      "posts": "Posts",
+      "knowledge": "Knowledge Documents",
+      "includeCollections": "Include Collections",
+      "includePrivatePosts": "Include Private Posts",
+      "includeKnowledgeBase": "Include Knowledge Base",
+      "toNormal": "Migrate to Normal",
+      "toStandalone": "Migrate to Standalone",
+      "migrating": "Migrating...",
+      "success": "Migration successful",
+      "failed": "Migration failed",
+      "migratedItems": "Migrated Items",
+      "errors": "Errors"
+    }
   }
 }
