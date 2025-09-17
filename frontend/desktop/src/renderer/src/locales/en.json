@@ -176,6 +176,7 @@
       "collections": "Collections",
       "posts": "Posts",
       "knowledge": "Knowledge Documents",
+      "attachments": "Attachments",
       "includeCollections": "Include Collections",
       "includePrivatePosts": "Include Private Posts",
       "includeKnowledgeBase": "Include Knowledge Base",
@@ -185,7 +186,23 @@
       "success": "Migration successful",
       "failed": "Migration failed",
       "migratedItems": "Migrated Items",
-      "errors": "Errors"
+      "errors": "Errors",
+      "notAuthenticated": "Please login to the backend server first"
+    },
+    "auth": {
+      "authenticated": "Connected to backend server",
+      "notAuthenticated": "Not connected to backend server",
+      "autoAuthenticated": "Auto-authenticated with stored token",
+      "initFailed": "Failed to initialize authentication",
+      "loggedOut": "Logged out from backend server",
+      "refresh": "Refresh",
+      "checking": "Checking...",
+      "logout": "Logout",
+      "errors": {
+        "missingCredentials": "Please enter both username and password",
+        "loginFailed": "Login failed",
+        "unknown": "Unknown error occurred"
+      }
     }
   }
 }

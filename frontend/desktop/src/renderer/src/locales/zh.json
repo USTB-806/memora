@@ -176,6 +176,7 @@
       "collections": "收藏",
       "posts": "推文",
       "knowledge": "知识文档",
+      "attachments": "附件",
       "includeCollections": "包含收藏",
       "includePrivatePosts": "包含私有推文",
       "includeKnowledgeBase": "包含知识库",
@@ -185,7 +186,23 @@
       "success": "迁移成功",
       "failed": "迁移失败",
       "migratedItems": "已迁移项目",
-      "errors": "错误"
+      "errors": "错误",
+      "notAuthenticated": "请先登录后端服务器"
+    },
+    "auth": {
+      "authenticated": "已连接到后端服务器",
+      "notAuthenticated": "未连接到后端服务器",
+      "autoAuthenticated": "自动认证成功",
+      "initFailed": "认证初始化失败",
+      "loggedOut": "已登出后端服务器",
+      "refresh": "刷新",
+      "checking": "检查中...",
+      "logout": "登出",
+      "errors": {
+        "missingCredentials": "请输入用户名和密码",
+        "loginFailed": "登录失败",
+        "unknown": "发生未知错误"
+      }
     }
   }
 }

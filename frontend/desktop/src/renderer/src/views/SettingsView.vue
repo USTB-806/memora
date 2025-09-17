@@ -174,6 +174,36 @@
       <div v-if="isStandaloneMode" class="bg-primary rounded-lg shadow-primary p-6 mb-6">
         <h2 class="text-xl font-semibold text-accent-text mb-4">{{ t('settings.migration.title') }}</h2>
 
+        <!-- 后端认证状态 -->
+        <div class="bg-muted rounded-lg p-4 mb-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-2 h-2 rounded-full mr-2" :class="isAuthenticated ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-sm font-medium" :class="isAuthenticated ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'">
+                {{ isAuthenticated ? t('settings.auth.authenticated') : t('settings.auth.notAuthenticated') }}
+              </span>
+            </div>
+            <div v-if="isAuthenticated" class="flex items-center space-x-2">
+              <button
+                @click="refreshAuth"
+                :disabled="isAuthenticating"
+                class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 disabled:opacity-50"
+              >
+                {{ isAuthenticating ? t('settings.auth.checking') : t('settings.auth.refresh') }}
+              </button>
+              <button
+                @click="logoutFromBackend"
+                class="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+              >
+                {{ t('settings.auth.logout') }}
+              </button>
+            </div>
+          </div>
+          <div v-if="authStatus" class="text-sm mt-2" :class="authStatus.success ? 'text-green-600' : 'text-red-600'">
+            {{ authStatus.message }}
+          </div>
+        </div>
+
         <div class="space-y-4">
           <!-- 迁移状态 -->
           <div class="bg-muted rounded-lg p-4">
@@ -262,6 +292,7 @@
                 <li>{{ t('settings.migration.collections') }}: {{ migrationResult.migratedItems.collections }}</li>
                 <li>{{ t('settings.migration.posts') }}: {{ migrationResult.migratedItems.posts }}</li>
                 <li>{{ t('settings.migration.knowledge') }}: {{ migrationResult.migratedItems.knowledgeDocuments }}</li>
+                <li>{{ t('settings.migration.attachments') }}: {{ migrationResult.migratedItems.attachments }}</li>
               </ul>
             </div>
             <div v-if="migrationResult.errors.length > 0" class="mt-2 text-xs text-red-600">
@@ -282,6 +313,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppMode } from '@/composables/useAppMode'
 import { dataMigration } from '@/services/dataMigration.service'
+import { serverAPI } from '@/services/serverAPI.service'
 
 const { t, locale } = useI18n()
 const { currentMode, setMode, initializeMode, isStandalone } = useAppMode()
@@ -314,6 +346,11 @@ const migrationOptions = ref({
 })
 const isMigrating = ref(false)
 const migrationResult = ref(null)
+
+// 认证相关
+const isAuthenticated = ref(false)
+const isAuthenticating = ref(false)
+const authStatus = ref(null)
 
 // 计算属性
 const isStandaloneMode = computed(() => isStandalone.value)
@@ -447,6 +484,9 @@ onMounted(async () => {
   // 加载AI配置
   loadAIConfig()
 
+  // 初始化认证
+  await initializeAuth()
+
   // 检查数据迁移状态
   await checkMigrationStatus()
 })
@@ -455,13 +495,76 @@ onMounted(async () => {
 const checkMigrationStatus = async () => {
   try {
     const status = await dataMigration.checkMigrationStatus()
-    migrationStatus.value = status
+    // 总是允许迁移到standalone模式，因为这是主要功能
+    migrationStatus.value = {
+      ...status,
+      canMigrateToStandalone: true
+    }
   } catch (error) {
     console.error('Failed to check migration status:', error)
+    // 即使出错也允许迁移
+    migrationStatus.value = {
+      canMigrateToStandalone: true,
+      canMigrateToNormal: false,
+      dataSize: {
+        localCollections: 0,
+        localPosts: 0,
+        localKnowledgeDocs: 0
+      }
+    }
   }
 }
 
+// 认证相关方法
+const initializeAuth = async () => {
+  isAuthenticating.value = true
+  try {
+    const authenticated = await serverAPI.initializeAuth()
+    isAuthenticated.value = authenticated
+    if (authenticated) {
+      authStatus.value = { success: true, message: t('settings.auth.autoAuthenticated') }
+    } else {
+      authStatus.value = { success: false, message: t('settings.auth.notAuthenticated') }
+    }
+  } catch (error) {
+    console.error('Auth initialization failed:', error)
+    isAuthenticated.value = false
+    authStatus.value = { success: false, message: t('settings.auth.initFailed') }
+  } finally {
+    isAuthenticating.value = false
+  }
+}
+
+const refreshAuth = async () => {
+  await initializeAuth()
+}
+
+const logoutFromBackend = () => {
+  serverAPI.setToken(null)
+  isAuthenticated.value = false
+  authStatus.value = { success: false, message: t('settings.auth.loggedOut') }
+  // 清除本地存储的token（使用与profile页面相同的名称）
+  localStorage.removeItem('access_token')
+}
+
 const migrateToStandalone = async () => {
+  // 检查是否已认证
+  if (!isAuthenticated.value) {
+    migrationResult.value = {
+      success: false,
+      migratedItems: {
+        users: 0,
+        collections: 0,
+        posts: 0,
+        comments: 0,
+        knowledgeDocuments: 0,
+        attachments: 0
+      },
+      errors: [t('settings.migration.errors.notAuthenticated')]
+    }
+    return
+  }
+
   isMigrating.value = true
   migrationResult.value = null
 
@@ -485,7 +588,8 @@ const migrateToStandalone = async () => {
         collections: 0,
         posts: 0,
         comments: 0,
-        knowledgeDocuments: 0
+        knowledgeDocuments: 0,
+        attachments: 0
       },
       errors: [`Migration failed: ${error}`]
     }
@@ -518,7 +622,8 @@ const migrateToNormal = async () => {
         collections: 0,
         posts: 0,
         comments: 0,
-        knowledgeDocuments: 0
+        knowledgeDocuments: 0,
+        attachments: 0
       },
       errors: [`Migration failed: ${error}`]
     }

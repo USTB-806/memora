@@ -10,6 +10,7 @@ from routers.attachment import router as attachment_router
 from routers.category import router as category_router
 from routers.auth import router as auth_router
 from routers.community import router as community_router
+from routers.migration import router as migration_router
 from routers.static import mount_static_files
 from entity.response import Response
 
@@ -41,6 +42,7 @@ app.include_router(collections_router, prefix="/api/v1")
 app.include_router(attachment_router, prefix="/api/v1")
 app.include_router(category_router, prefix="/api/v1")
 app.include_router(community_router, prefix="/api/v1")
+app.include_router(migration_router, prefix="/api/v1")
 
 
 # 添加异常处理器

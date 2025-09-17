@@ -24,6 +24,8 @@ export interface Collection {
   id?: number
   user_id: number
   category_id?: number
+  name?: string
+  description?: string
   tags?: string
   created_at?: string
   updated_at?: string
@@ -152,6 +154,8 @@ class LocalDatabase {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
         category_id INTEGER,
+        name TEXT,
+        description TEXT,
         tags TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -302,10 +306,10 @@ class LocalDatabase {
   createCollection(collection: Omit<Collection, 'id' | 'created_at' | 'updated_at'>): Collection {
     const db = this.getDb()
     const stmt = db.prepare(`
-      INSERT INTO collections (user_id, category_id, tags)
-      VALUES (?, ?, ?)
+      INSERT INTO collections (user_id, category_id, name, description, tags)
+      VALUES (?, ?, ?, ?, ?)
     `)
-    const result = stmt.run(collection.user_id, collection.category_id, collection.tags)
+    const result = stmt.run(collection.user_id, collection.category_id, collection.name, collection.description, collection.tags)
     return { ...collection, id: result.lastInsertRowid as number }
   }
 
