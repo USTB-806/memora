@@ -269,75 +269,78 @@ async function detectActiveBrowser(): Promise<BrowserInfo> {
       const scriptPath = join(userDataDir, 'detect_browser.ps1')
 
       const psScript = `
-# Browser Detection Script
-Add-Type -TypeDefinition @'
-using System;
-using System.Runtime.InteropServices;
-using System.Text;
-
-public class WindowHelper {
-    [DllImport("user32.dll")]
-    public static extern IntPtr GetForegroundWindow();
-
-    [DllImport("user32.dll")]
-    public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
-
-    [DllImport("user32.dll")]
-    public static extern int GetWindowTextLength(IntPtr hWnd);
-
-    [DllImport("user32.dll")]
-    public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
-}
-'@
+# Browser Detection Script - Using Get-Process and Window Title Matching
+$ErrorActionPreference = 'SilentlyContinue'
 
 try {
-    $foregroundWindow = [WindowHelper]::GetForegroundWindow()
-    $processId = 0
-    [WindowHelper]::GetWindowThreadProcessId($foregroundWindow, [ref]$processId)
+    # Get all browser processes
+    $browserNames = @('msedge', 'chrome', 'firefox', 'opera', 'brave', 'vivaldi', 'iexplore')
+    $browsers = Get-Process | Where-Object { $_.ProcessName.ToLower() -in $browserNames -and $_.MainWindowTitle }
 
-    $process = Get-Process -Id $processId -ErrorAction SilentlyContinue
+    if ($browsers) {
+        # Get the most recently active browser (by CPU time or other metric)
+        $activeBrowser = $browsers | Sort-Object -Property CPU -Descending | Select-Object -First 1
 
-    if ($process) {
-        $processName = $process.ProcessName.ToLower()
-        $browserNames = @("msedge", "chrome", "firefox", "opera", "brave", "vivaldi", "iexplore")
-
-        if ($processName -in $browserNames) {
-            $titleLength = [WindowHelper]::GetWindowTextLength($foregroundWindow)
-            if ($titleLength -gt 0) {
-                $title = New-Object System.Text.StringBuilder($titleLength + 1)
-                [WindowHelper]::GetWindowText($foregroundWindow, $title, $title.Capacity)
-
-                Write-Output "SUCCESS:$processName:$($title.ToString())"
-            } else {
-                Write-Output "SUCCESS:$processName:"
-            }
+        if ($activeBrowser.MainWindowTitle) {
+            Write-Output ('SUCCESS:' + $activeBrowser.ProcessName.ToLower() + ':' + $activeBrowser.MainWindowTitle)
         } else {
-            Write-Output "NO_BROWSER:$processName:"
+            Write-Output ('SUCCESS:' + $activeBrowser.ProcessName.ToLower() + ':')
         }
     } else {
-        Write-Output "ERROR:No process found"
+        # Check if electron is running (our app)
+        $electronProcess = Get-Process -Name 'electron' -ErrorAction SilentlyContinue
+        if ($electronProcess) {
+            Write-Output 'ELECTRON_WINDOW'
+        } else {
+            Write-Output 'NO_BROWSER:unknown:'
+        }
     }
 } catch {
-    Write-Output "ERROR:$($_.Exception.Message)"
+    Write-Output ('ERROR:' + $_.Exception.Message)
 }
 `
 
-      fs.writeFileSync(scriptPath, psScript, 'utf8')
-
-      const { stdout, stderr } = await execAsync(
-        `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`,
-        {
-          encoding: 'utf8',
-          timeout: 5000,
-          windowsHide: true
-        }
-      )
-
-      // Clean up temporary file
+      // Try to write and execute the script, but handle file locking gracefully
+      let scriptExecuted = false
       try {
-        fs.unlinkSync(scriptPath)
-      } catch (e) {
-        console.warn('Failed to clean up script file:', e)
+        fs.writeFileSync(scriptPath, psScript, 'utf8')
+        scriptExecuted = true
+      } catch (writeError) {
+        console.warn('Failed to write PowerShell script file, trying inline execution:', writeError)
+        // Fall back to inline execution if file write fails
+      }
+
+      let stdout: string, stderr: string
+      if (scriptExecuted) {
+        const result = await execAsync(
+          `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`,
+          {
+            encoding: 'utf8',
+            timeout: 5000,
+            windowsHide: true
+          }
+        )
+        stdout = result.stdout
+        stderr = result.stderr
+
+        // Clean up temporary file
+        try {
+          fs.unlinkSync(scriptPath)
+        } catch (e) {
+          console.warn('Failed to clean up script file:', e)
+        }
+      } else {
+        // Execute PowerShell script inline
+        const result = await execAsync(
+          `powershell.exe -ExecutionPolicy Bypass -Command "${psScript.replace(/"/g, '""')}"`,
+          {
+            encoding: 'utf8',
+            timeout: 5000,
+            windowsHide: true
+          }
+        )
+        stdout = result.stdout
+        stderr = result.stderr
       }
 
       if (stderr) {
@@ -347,8 +350,12 @@ try {
       const output = stdout.trim()
       console.log('Browser detection output:', output)
 
-      if (output.startsWith('SUCCESS:')) {
-        const parts = output.split(':')
+      // Handle multi-line output by looking for our expected patterns
+      const lines = output.split('\n').map(line => line.trim()).filter(line => line.length > 0)
+      const lastLine = lines[lines.length - 1] || ''
+
+      if (lastLine.startsWith('SUCCESS:')) {
+        const parts = lastLine.split(':')
         const browser = parts[1] || 'UNKNOWN'
         const windowTitle = parts.slice(2).join(':') || ''
 
@@ -358,15 +365,19 @@ try {
           hasBrowser: true,
           windowTitle: windowTitle
         }
-      } else if (output.startsWith('NO_BROWSER:')) {
-        const parts = output.split(':')
-        const processName = parts[1] || 'UNKNOWN'
-
+      } else if (lastLine === 'ERROR:AddType failed') {
         return {
           success: true,
           browser: 'NONE',
           hasBrowser: false,
-          windowTitle: `Active: ${processName}`
+          windowTitle: 'Browser detection unavailable'
+        }
+      } else if (lastLine.startsWith('ERROR:')) {
+        return {
+          success: true,
+          browser: 'NONE',
+          hasBrowser: false,
+          windowTitle: 'Detection error: ' + lastLine.substring(6)
         }
       } else {
         throw new Error(`Unexpected output: ${output}`)
@@ -591,25 +602,49 @@ try {
 `
 
     // 写入临时脚本文件
-    fs.writeFileSync(scriptPath, psScript, 'utf8')
+    let scriptExecuted = false
+    try {
+      fs.writeFileSync(scriptPath, psScript, 'utf8')
+      scriptExecuted = true
+    } catch (writeError) {
+      console.warn('Failed to write PowerShell script file, trying inline execution:', writeError)
+      // Fall back to inline execution if file write fails
+    }
 
     console.log('Executing browser URL capture script...')
 
     // 执行脚本
-    const { stdout, stderr } = await execAsync(
-      `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`,
-      {
-        encoding: 'utf8',
-        timeout: 12000,
-        windowsHide: true
-      }
-    )
+    let stdout: string, stderr: string
+    if (scriptExecuted) {
+      const result = await execAsync(
+        `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`,
+        {
+          encoding: 'utf8',
+          timeout: 12000,
+          windowsHide: true
+        }
+      )
+      stdout = result.stdout
+      stderr = result.stderr
 
-    // 清理临时文件
-    try {
-      fs.unlinkSync(scriptPath)
-    } catch (e) {
-      console.warn('Failed to clean up script file:', e)
+      // 清理临时文件
+      try {
+        fs.unlinkSync(scriptPath)
+      } catch (e) {
+        console.warn('Failed to clean up script file:', e)
+      }
+    } else {
+      // Execute PowerShell script inline
+      const result = await execAsync(
+        `powershell.exe -ExecutionPolicy Bypass -Command "${psScript.replace(/"/g, '""')}"`,
+        {
+          encoding: 'utf8',
+          timeout: 12000,
+          windowsHide: true
+        }
+      )
+      stdout = result.stdout
+      stderr = result.stderr
     }
 
     console.log('Browser capture output:', JSON.stringify(stdout))
